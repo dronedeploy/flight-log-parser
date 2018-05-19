@@ -1,0 +1,16 @@
+{
+  "name": "flight-log-parser",
+  "version": "1.0.0",
+  "description": "Parser for DroneDeploy flight logs",
+  "main": "index.js",
+  "repository": "https://www.github.com/dronedeploy/flight-log-parser",
+  "license": "MIT",
+  "dependencies": {
+    "csv-parse": "^2.4.0"
+  },
+  "devDependencies": {
+    "jest": "^22.4.4",
+    "tslint": "^5.10.0",
+    "typescript": "^2.8.3"
+  }
+}

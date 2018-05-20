@@ -9,6 +9,8 @@
     "csv-parse": "^2.4.0"
   },
   "devDependencies": {
+    "@types/csv-parse": "^1.1.11",
+    "@types/node": "^10.1.2",
     "jest": "^22.4.4",
     "tslint": "^5.10.0",
     "typescript": "^2.8.3"

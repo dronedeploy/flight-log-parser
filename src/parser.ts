@@ -1,6 +1,6 @@
-import * as parse from 'csv-parse';
+import parse from 'csv-parse';
 
-import { FlightLogRow, FlightLogHeader, FlightLogMetaData } from './types';
+import { FlightLogRow, FlightLogHeader, FlightLogMetaData, FlightLog } from './types';
 import { INT_FIELDS, BOOL_FIELDS, FLOAT_FIELDS } from './field-types';
 
 const META_REGEX = {
@@ -30,7 +30,7 @@ const META_REGEX = {
 const LOG_HEADER_LINES = 27;
 const LOG_FOOTER_LINES = 3;
 
-export function parseLog(log: String): Promise<any> {
+export function parseLog(log: String): Promise<FlightLog> {
   const lines = log.split('\n');
 
   if (lines[lines.length - 1] === '') {
@@ -66,7 +66,7 @@ function parseBody(lines: string[]): Promise<FlightLogRow[]> {
 
       const logs = rows
         .map((row) => {
-          const log = {};
+          const log = {} as FlightLogRow;
 
           for (let i = 0; i < headers.length; i++) {
             const header = headers[i].trim() as FlightLogHeader;
@@ -87,7 +87,7 @@ function parseBody(lines: string[]): Promise<FlightLogRow[]> {
             log[header] = value;
           }
 
-          return log as FlightLogRow;
+          return log;
         });
 
       resolve(logs);

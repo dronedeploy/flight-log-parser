@@ -173,6 +173,11 @@ export type FlightLogMetaData = {
   };
 };
 
+export type FlightLog = {
+  metaData: FlightLogMetaData;
+  rows: FlightLogRow[];
+}
+
 // based off of types in ios/android SDK FlightMode enums
 export const FLIGHT_MODE_MAPPING = {
   0: 'Manual',

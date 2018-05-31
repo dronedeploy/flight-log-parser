@@ -2,9 +2,24 @@
   "name": "flight-log-parser",
   "version": "1.0.0",
   "description": "Parser for DroneDeploy flight logs",
-  "main": "index.js",
+  "main": "dist/flight-log-parser.js",
+  "module": "dist/flight-log-parser.es6.js",
+  "typings": "dist/types/flight-log-parser.d.ts",
+  "files": [
+    "dist"
+  ],
   "repository": "https://www.github.com/dronedeploy/flight-log-parser",
   "license": "MIT",
+  "scripts": {
+    "build": "tsc --module commonjs && rollup -c rollup.config.ts",
+    "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
+    "test": "jest"
+  },
+  "jest": {
+    "transform": {
+      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    }
+  },
   "dependencies": {
     "csv-parse": "^2.4.0"
   },
@@ -12,7 +27,18 @@
     "@types/csv-parse": "^1.1.11",
     "@types/node": "^10.1.2",
     "jest": "^22.4.4",
+    "lodash.camelcase": "^4.3.0",
+    "rollup": "^0.58.0",
+    "rollup-plugin-commonjs": "^9.0.0",
+    "rollup-plugin-json": "^3.0.0",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-sourcemaps": "^0.4.2",
+    "rollup-plugin-typescript2": "^0.11.1",
+    "ts-jest": "^22.0.0",
+    "ts-node": "^6.0.0",
     "tslint": "^5.10.0",
+    "tslint-config-prettier": "^1.1.0",
+    "tslint-config-standard": "^7.0.0",
     "typescript": "^2.8.3"
   }
 }

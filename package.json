@@ -17,8 +17,10 @@
   },
   "jest": {
     "transform": {
-      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
-    }
+        ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/src/.*|(\\.|/)(test|spec))\\.(js?|ts?)$",
+    "moduleFileExtensions": ["ts", "js"],
   },
   "dependencies": {
     "csv-parse": "^2.4.0"

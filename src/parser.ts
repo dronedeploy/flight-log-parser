@@ -156,4 +156,3 @@ function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData 
     },
   };
 };
-

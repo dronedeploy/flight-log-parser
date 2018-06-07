@@ -8,6 +8,7 @@
     "allowSyntheticDefaultImports": true,
     "declarationDir": "dist/types",
     "outDir": "dist/lib",
+     "lib": ["es2015", "es2017", "dom"],
     "typeRoots": [
       "node_modules/@types"
     ]
@@ -15,8 +16,9 @@
   "include": [
     "src",
     "node_modules/@types"
-],
+  ],
     "atom": {
        "rewriteTsconfig": false
-   }
+   },
+
 }

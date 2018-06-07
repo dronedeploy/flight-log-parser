@@ -22,12 +22,14 @@ describe('test parse logs', () => {
     });
 
     it('parsed log should exist', async() => {
+      console.log("parsedLogs", parsedLogs[0].metaData);
       expect(parsedLogs).toBeTruthy();
     });
 
     it('parsed log should have metaData and rows', async() => {
-      const result = [parsedLogs].filter((cur) => !!cur.metaData && !!cur.rows);
+      const result = parsedLogs.filter((cur) => !!cur.metaData && !!cur.rows);
       expect(result.length).toBe(parsedLogs.length);
     });
 
+    // it('should ')
 });

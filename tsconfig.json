@@ -13,6 +13,10 @@
     ]
   },
   "include": [
-    "src"
-  ]
+    "src",
+    "node_modules/@types"
+],
+    "atom": {
+       "rewriteTsconfig": false
+   }
 }

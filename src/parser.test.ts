@@ -26,15 +26,35 @@ describe('test parse logs', () => {
             expect(iosLogs).toBeTruthy();
         });
 
-        describe('test ios logs', () => {
-            it('parsed log should have correct metaData', async() => {
-                const ipadLog = await parseLog(iosLogs.ipad);
+        describe('test ipad logs', () => {
+            let ipadLog : any;
+            beforeAll(async() => {
+                ipadLog = await parseLog(iosLogs.ipad);
+            });
+
+            it('parsed log should have correct os', () => {
                 const ipadLogMetaData = ipadLog.metaData;
                 const os = ipadLogMetaData.device.os;
                 const re = /(ios \d+(\.\d)*)/i
                 const result = os.match(re);
                 expect(result).toBeTruthy();
             });
+
+            it('parsed log should have correct session info', () => {
+                const ipadLogMetaData = ipadLog.metaData;
+                const {session} = ipadLogMetaData;
+                const {id, start, end, elapsed} = session;
+
+                const startDate = new Date("05/23/2018 20:50:18");
+                const endDate = new Date("05/23/2018 20:54:12");
+
+                expect(id).toEqual("5b05d265efd0520e45f2b17d");
+                expect(start).toEqual(startDate);
+                expect(end).toEqual(endDate);
+                expect(elapsed).toEqual(233.217);
+            });
+
+
         });
     });
 
@@ -57,7 +77,7 @@ describe('test parse logs', () => {
                 expect(androidLogs).toBeTruthy();
             });
 
-            it('parsed log should have correct metaData', async() => {
+            it('parsed log should have correct os', async() => {
                 const pixel2Log = await parseLog(androidLogs.pixel2);
                 const pixel2LogMetaData = pixel2Log.metaData;
                 const os = pixel2LogMetaData.device.os;

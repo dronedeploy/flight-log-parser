@@ -64,9 +64,10 @@ readFileAsync(filePath, {encoding: 'utf8'})
 ```
 
 ##### FlightLog
-`FlightLog` object separates a flight log to two parts: `FlightLogMetaData` and `FlightLogRow`.
+`FlightLog` object separates a flight log to two parts: `metaData` and `rows`.
 
 ```js
+ // Type definitions
  FlightLog = {
   metaData: FlightLogMetaData;
   rows: FlightLogRow[];

@@ -10,7 +10,7 @@ const readFileAsync = promisify(fs.readFile);
 // Maybe we can read all files from one folder?
 const androidFilePath = path.join(__dirname, '/../../testlog/pixel2-inspire2.log');
 // const iosFilePath2 = path.join(__dirname, '../testlog/iphone-ios11-inspire.log');
-xdescribe('test parse android logs', () => {
+describe('test parse android logs', () => {
     let androidLogs : any;
     beforeAll(async() => {
         androidLogs = {
@@ -23,7 +23,7 @@ xdescribe('test parse android logs', () => {
         expect(androidLogs).toBeTruthy();
     });
 
-    xdescribe('test pixel2 log', () => {
+    describe('test pixel2 log', () => {
         let pixel2Log : any;
         beforeAll(async() => {
             pixel2Log = await parseLog(androidLogs.pixel2);
@@ -41,16 +41,18 @@ xdescribe('test parse android logs', () => {
             expect(result).toBeTruthy();
         });
 
-        xdescribe('pixel2 log rows', () => {
+        describe('pixel2 log rows', () => {
             it('has proper key for each row', () => {
                   const pixel2LogRows = pixel2Log.rows;
                   const firstRow = pixel2LogRows[0];
+                  const keyLength = Object.keys(firstRow).length;
                   const {AircraftBatteryPowerPercent} = FlightLogHeader;
                   expect(firstRow).toHaveProperty(AircraftBatteryPowerPercent);
+                  expect(keyLength).toBe(120);
             })
         })
 
-        xdescribe('pixel2 log detail test', () => {
+        xdescribe('pixel2-inspire2 log metaData test', () => {
             it('parsed log should have correct session info', () => {
                 const pixel2LogMetaData = pixel2Log.metaData;
                 const {session} = pixel2LogMetaData;

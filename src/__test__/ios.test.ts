@@ -124,12 +124,14 @@ describe('test parse ios logs', () => {
             it('has proper key for each row', () => {
                 const iphoneLogRows = iphoneLog.rows;
                 const firstRow = iphoneLogRows[0];
-                const {AircraftBatteryPowerPercent, AircraftCameraSDCardRemainingPercent} = FlightLogHeader;
+                const keyLength = Object.keys(firstRow).length;
+                const {AircraftBatteryPowerPercent} = FlightLogHeader;
                 expect(firstRow).toHaveProperty(AircraftBatteryPowerPercent);
+                expect(keyLength).toBe(130);
             })
         })
 
-        xdescribe('iphone log metaData detail test', () => {
+        xdescribe('iphone-ios11-inspire metaData detail test', () => {
             it('parsed log should have correct session info', () => {
                 const iphoneLogMetaData = iphoneLog.metaData;
                 const {session} = iphoneLogMetaData;
@@ -222,12 +224,14 @@ describe('test parse ios logs', () => {
             it('has proper key for each row', () => {
                   const ipadLogRows = ipadLog.rows;
                   const firstRow = ipadLogRows[0];
+                  const keyLength = Object.keys(firstRow).length;
                   const {AircraftBatteryPowerPercent} = FlightLogHeader;
                   expect(firstRow).toHaveProperty(AircraftBatteryPowerPercent);
+                  expect(keyLength).toBe(130);
             })
         })
 
-        xdescribe('ipadLog metaData test', () => {
+        xdescribe('ipad-ios11-phantom4 metaData test', () => {
             it('parsed log should have correct session info', () => {
                 const ipadLogMetaData = ipadLog.metaData;
                 const {session} = ipadLogMetaData;

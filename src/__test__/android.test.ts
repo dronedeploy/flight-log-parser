@@ -22,7 +22,7 @@ describe('test parse android logs', () => {
         expect(androidLogs).toBeTruthy();
     });
 
-    describe('test pixel2 log', () => {
+    xdescribe('test pixel2 log', () => {
         let pixel2Log : any;
         beforeAll(async() => {
             pixel2Log = await parseLog(androidLogs.pixel2);
@@ -111,6 +111,5 @@ describe('test parse android logs', () => {
                 expect(serialNumber).toEqual('09CLDBV00401YQ');
             });
         });
-
     });
 });

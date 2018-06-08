@@ -8,7 +8,7 @@ const readFileAsync = promisify(fs.readFile);
 
 // Maybe we can read all files from one folder?
 const ipadFilePath = path.join(__dirname, '/../../testlog/ipad-ios11-phantom4.log');
-const iphoneFilePath = path.join(__dirname, '/../../testlog/ipad-ios11-phantom4.log');
+const iphoneFilePath = path.join(__dirname, '/../../testlog/iphone-ios11-inspire.log');
 // const iosFilePath2 = path.join(__dirname, '../testlog/iphone-ios11-inspire.log');
 describe('test parse ios logs', () => {
     let iosLogs : any;
@@ -24,7 +24,95 @@ describe('test parse ios logs', () => {
         expect(iosLogs).toBeTruthy();
     });
 
-    describe('test ipad log', () => {
+    xdescribe('test iphone log', () => {
+        let iphoneLog : any;
+        beforeAll(async() => {
+            iphoneLog = await parseLog(iosLogs.iphone);
+        });
+
+        it('parsed log should have correct os', () => {
+            const iphoneLogMetaData = iphoneLog.metaData;
+            const os = iphoneLogMetaData.device.os;
+            const re = /(ios \d+(\.\d)*)/i
+            const result = os.match(re);
+            expect(result).toBeTruthy();
+        });
+
+        describe('iphone log detail test', () => {
+            it('parsed log should have correct session info', () => {
+                const iphoneLogMetaData = iphoneLog.metaData;
+                const {session} = iphoneLogMetaData;
+                const {id, start, end, elapsed} = session;
+
+                const startDate = new Date("06/04/2018 22:29:00");
+                const endDate = new Date("06/04/2018 22:31:40");
+
+                expect(id).toEqual("5b15bcec1fae218a83b7e76a");
+                expect(start).toEqual(startDate);
+                expect(end).toEqual(endDate);
+                expect(elapsed).toEqual(160.408);
+            });
+
+            it('parsed log should have correct aircraft info', () => {
+                const iphoneLogMetaData = iphoneLog.metaData;
+                const {aircraft} = iphoneLogMetaData;
+                const {model, name, firmware} = aircraft;
+
+                expect(model).toEqual("Inspire 1 Pro");
+                expect(name).toEqual("inspire pro");
+                expect(firmware).toEqual("1.11.01.50");
+            });
+
+            it('parsed log should have correct battery info', () => {
+                const iphoneLogMetaData = iphoneLog.metaData;
+                const {battery} = iphoneLogMetaData;
+                const {chargeVolume, remainingLifePercent, discharges, cells, firmware} = battery;
+
+                expect(chargeVolume).toEqual(4287);
+                expect(remainingLifePercent).toEqual(83);
+                expect(discharges).toEqual(69);
+                expect(cells).toEqual(6);
+                expect(firmware).toEqual("03.09.00.00");
+            });
+
+
+            it('parsed log should have correct flightController info', () => {
+                const iphoneLogMetaData = iphoneLog.metaData;
+                const {flightController} = iphoneLogMetaData;
+                const {serialNumber, firmware} = flightController;
+
+                expect(serialNumber).toEqual('N/A');
+                expect(firmware).toEqual('02.04.20.50');
+            });
+
+            it('parsed log should have correct gimbal info', () => {
+                const iphoneLogMetaData = iphoneLog.metaData;
+                const {gimbal} = iphoneLogMetaData;
+                const {firmware} = gimbal;
+
+                expect(firmware).toEqual('01.31.01.67');
+            });
+
+            it('parsed log should have correct remoteController info', () => {
+                const iphoneLogMetaData = iphoneLog.metaData;
+                const {remoteController} = iphoneLogMetaData;
+                const {serialNumber, firmware} = remoteController;
+
+                expect(serialNumber).toEqual("03LL264834");
+                expect(firmware).toEqual("1.2.0.17");
+            });
+
+            it('parsed log should have correct Camera info', () => {
+                const iphoneLogMetaData = iphoneLog.metaData;
+                const {camera} = iphoneLogMetaData;
+                const {serialNumber} = camera;
+
+                expect(serialNumber).toEqual('N/A');
+            });
+        });
+    });
+
+    xdescribe('test ipad log', () => {
         let ipadLog : any;
         beforeAll(async() => {
             ipadLog = await parseLog(iosLogs.ipad);
@@ -38,7 +126,7 @@ describe('test parse ios logs', () => {
             expect(result).toBeTruthy();
         });
 
-        xdescribe('ipad log detail test', () => {
+        describe('ipadLog detail test', () => {
             it('parsed log should have correct session info', () => {
                 const ipadLogMetaData = ipadLog.metaData;
                 const {session} = ipadLogMetaData;

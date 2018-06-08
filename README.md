@@ -44,11 +44,10 @@ The `parseLog` method of `Flight log parser` takes in a `String` that is generat
 ##### In .js file
 
 ```js
-import { parseLog } from 'flight-log-parser';
-
 const {promisify} = require('util');
 const fs = require('fs');
 const path = require('path');
+const { parseLog } = require ('flight-log-parser');
 
 const readFileAsync = promisify(fs.readFile);
 const filePath = path.join(__dirname, 'YOUR_LOG_FILE_PATH');
@@ -129,9 +128,6 @@ readFileAsync(filePath, {encoding: 'utf8'})
       const log10sAfterTookOff = parsedFlightLog.rows[100];
   })
 ```
-
-
-
 ##### FlightLogHeader
 FlightLogHeader is an enum object that contains all the column names a row of flight info.
 for example :

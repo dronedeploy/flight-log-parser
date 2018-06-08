@@ -9,14 +9,14 @@ const readFileAsync = promisify(fs.readFile);
 // Maybe we can read all files from one folder?
 const ipadFilePath = path.join(__dirname, '/../../testlog/ipad-ios11-phantom4.log');
 const iphoneFilePath = path.join(__dirname, '/../../testlog/iphone-ios11-inspire.log');
-// const iosFilePath2 = path.join(__dirname, '../testlog/iphone-ios11-inspire.log');
+const errorLogFilePath = path.join(__dirname, '/../../testlog/errorLog.log');
 describe('test parse ios logs', () => {
     let iosLogs : any;
     beforeAll(async() => {
         iosLogs = {
             ipad: await readFileAsync(ipadFilePath, {encoding: 'utf8'}),
             iphone: await readFileAsync(iphoneFilePath, {encoding: 'utf8'}),
-            // other: await readFileAsync(otherPath, {encoding: 'utf8'}),
+            errorLog: await readFileAsync(errorLogFilePath, {encoding: 'utf8'}),
         };
     });
 
@@ -24,7 +24,87 @@ describe('test parse ios logs', () => {
         expect(iosLogs).toBeTruthy();
     });
 
-    xdescribe('test iphone log', () => {
+    xdescribe('test sampleErrLog log', () => {
+        let sampleErrLog : any;
+        beforeAll(async() => {
+            sampleErrLog = await parseLog(iosLogs.errorLog);
+        });
+
+        describe('sampleErrLog detail test', () => {
+            it('parsed log should have correct falsy value when session info has no value', () => {
+                const sampleErrLogMetaData = sampleErrLog.metaData;
+                const {session} = sampleErrLogMetaData;
+                const {id, start, end, elapsed} = session;
+
+                // console.log("sampleErrLog", sampleErrLog.metaData);
+                const startDate =  Date.parse(start);
+                const endDate = Date.parse(end);
+
+                expect(id).toEqual('N/A');
+                expect(Number.isNaN(startDate)).toBeTruthy();
+                expect(Number.isNaN(endDate)).toBeTruthy();
+                expect(Number.isNaN(elapsed)).toBeTruthy();
+            });
+
+            it('parsed log should have correct falsy value when aircraft info has no value', () => {
+                const sampleErrLogMetaData = sampleErrLog.metaData;
+                const {aircraft} = sampleErrLogMetaData;
+                const {model, name, firmware} = aircraft;
+
+                expect(model).toEqual('N/A');
+                expect(name).toEqual('N/A');
+                expect(firmware).toEqual('N/A');
+            });
+
+            it('parsed log should have correct falsy value when battery info has no value', () => {
+                const sampleErrLogMetaData = sampleErrLog.metaData;
+                const {battery} = sampleErrLogMetaData;
+                const {chargeVolume, remainingLifePercent, discharges, cells, firmware} = battery;
+
+                expect(Number.isNaN(chargeVolume)).toBeTruthy();
+                expect(Number.isNaN(remainingLifePercent)).toBeTruthy();
+                expect(Number.isNaN(discharges)).toBeTruthy();
+                expect(Number.isNaN(cells)).toBeTruthy();
+                expect(firmware).toEqual('N/A');
+            });
+
+            it('parsed log should have correct falsy value when gimbal info has no value', () => {
+                const sampleErrLogMetaData = sampleErrLog.metaData;
+                const {gimbal} = sampleErrLogMetaData;
+                const {firmware} = gimbal;
+
+                expect(firmware).toEqual('N/A');
+            });
+
+            it('parsed log should have correct falsy value when flightController info has no value', () => {
+                const sampleErrLogMetaData = sampleErrLog.metaData;
+                const {flightController} = sampleErrLogMetaData;
+                const {serialNumber, firmware} = flightController;
+
+                expect(serialNumber).toEqual('N/A');
+                expect(firmware).toEqual('N/A');
+            });
+
+            it('parsed log should have correct falsy value when remoteController info has no value', () => {
+                const sampleErrLogMetaData = sampleErrLog.metaData;
+                const {remoteController} = sampleErrLogMetaData;
+                const {serialNumber, firmware} = remoteController;
+
+                expect(serialNumber).toEqual('N/A');
+                expect(firmware).toEqual('N/A');
+            });
+
+            it('parsed log should have correct falsy value when camera info has no value', () => {
+                const sampleErrLogMetaData = sampleErrLog.metaData;
+                const {camera} = sampleErrLogMetaData;
+                const {serialNumber} = camera;
+
+                expect(serialNumber).toEqual('N/A');
+            });
+        });
+    });
+
+    describe('test iphone log', () => {
         let iphoneLog : any;
         beforeAll(async() => {
             iphoneLog = await parseLog(iosLogs.iphone);
@@ -38,7 +118,7 @@ describe('test parse ios logs', () => {
             expect(result).toBeTruthy();
         });
 
-        describe('iphone log detail test', () => {
+        xdescribe('iphone log detail test', () => {
             it('parsed log should have correct session info', () => {
                 const iphoneLogMetaData = iphoneLog.metaData;
                 const {session} = iphoneLogMetaData;

@@ -64,7 +64,7 @@ readFileAsync(filePath, {encoding: 'utf8'})
 ```
 
 ##### FlightLog
-`FlightLog` object separate a flight log to two parts, `FlightLogMetaData` and `FlightLogRow`.
+`FlightLog` object separates a flight log to two parts: `FlightLogMetaData` and `FlightLogRow`.
 
 ```js
  FlightLog = {
@@ -74,7 +74,7 @@ readFileAsync(filePath, {encoding: 'utf8'})
 ```
 
 ##### FlightLogMetaData
-FlightLogMetaData group related information from the log file to subcategories: appVersion, device, aircraft, battery ...
+`FlightLogMetaData` groups related information from the log file to subcategories: appVersion, device, aircraft, battery ...
 
 ```js
 FlightLogMetaData = {
@@ -129,8 +129,8 @@ readFileAsync(filePath, {encoding: 'utf8'})
   })
 ```
 ##### FlightLogHeader
-FlightLogHeader is an enum object that contains all the column names a row of flight info.
-for example :
+`FlightLogHeader` is an enum object that contains all the column names of a row.
+For example :
 ```js
 enum FlightLogHeader {
     DateTime = 'Date/Time (UTC)',

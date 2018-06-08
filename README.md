@@ -39,7 +39,7 @@ TypeScript is supported internally within each module, no installs required.
 ## How to use
 
 #### parseLog
-The `parseLog` method of `Flight log parser` takes in a `String` that was generated from DJI flight logs and it returns a `FlightLog` object.
+The `parseLog` method of `Flight log parser` takes in a `String` that is generated from a DJI flight log and it returns a `FlightLog` object.
 
 ##### In .js file
 

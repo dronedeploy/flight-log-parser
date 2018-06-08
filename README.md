@@ -118,7 +118,7 @@ FlightLogMetaData = {
 };
 ```
 ##### FlightLogRow
-DJI flight log creates a row of current flight info at every 0.1s. `FlightLogRow` is an array that contains every row of that flight info.
+DJI flight log creates a row of current flight info at every 0.1s. `FlightLogRow` is an array that contains all the rows DJI flight log created.
 
 If you want to retrieve information at 10s after the drone took off, you can do so by asking for the row at index 100.
 ```js

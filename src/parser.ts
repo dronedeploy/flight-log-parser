@@ -42,10 +42,12 @@ export function parseLog(log: String): Promise<FlightLog> {
   const body = lines.slice(LOG_HEADER_LINES, -LOG_FOOTER_LINES);
   const metaData = parseMetaData(header, footer);
 
-  return parseBody(body).then((rows) => ({
-    metaData,
-    rows,
-  }));
+  return parseBody(body).then((rows) => {
+      // console.log("rows", rows.length);
+      // console.log("rows[0]", rows[0]);
+    return {metaData,
+    rows,}
+});
 }
 
 function parseBody(lines: string[]): Promise<FlightLogRow[]> {
@@ -89,7 +91,6 @@ function parseBody(lines: string[]): Promise<FlightLogRow[]> {
 
           return log;
         });
-
       resolve(logs);
     });
   });

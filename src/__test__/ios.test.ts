@@ -3,13 +3,16 @@ import path from 'path';
 import fs from 'fs';
 import { promisify } from 'util';
 import { parseLog } from '../parser';
+import { FlightLogHeader } from '../types';
 
 const readFileAsync = promisify(fs.readFile);
 
 // Maybe we can read all files from one folder?
 const ipadFilePath = path.join(__dirname, '/../../testlog/ipad-ios11-phantom4.log');
 const iphoneFilePath = path.join(__dirname, '/../../testlog/iphone-ios11-inspire.log');
+const iphoneFilePath2 = path.join(__dirname, '/../../testlog/iphone-ios-11-3-matrice.log');
 const errorLogFilePath = path.join(__dirname, '/../../testlog/errorLog.log');
+
 describe('test parse ios logs', () => {
     let iosLogs : any;
     beforeAll(async() => {
@@ -30,13 +33,12 @@ describe('test parse ios logs', () => {
             sampleErrLog = await parseLog(iosLogs.errorLog);
         });
 
-        describe('sampleErrLog detail test', () => {
+        xdescribe('sampleErrLog detail test', () => {
             it('parsed log should have correct falsy value when session info has no value', () => {
                 const sampleErrLogMetaData = sampleErrLog.metaData;
                 const {session} = sampleErrLogMetaData;
                 const {id, start, end, elapsed} = session;
 
-                // console.log("sampleErrLog", sampleErrLog.metaData);
                 const startDate =  Date.parse(start);
                 const endDate = Date.parse(end);
 
@@ -118,7 +120,16 @@ describe('test parse ios logs', () => {
             expect(result).toBeTruthy();
         });
 
-        xdescribe('iphone log detail test', () => {
+        describe('iphone log rows', () => {
+            it('has proper key for each row', () => {
+                const iphoneLogRows = iphoneLog.rows;
+                const firstRow = iphoneLogRows[0];
+                const {AircraftBatteryPowerPercent, AircraftCameraSDCardRemainingPercent} = FlightLogHeader;
+                expect(firstRow).toHaveProperty(AircraftBatteryPowerPercent);
+            })
+        })
+
+        xdescribe('iphone log metaData detail test', () => {
             it('parsed log should have correct session info', () => {
                 const iphoneLogMetaData = iphoneLog.metaData;
                 const {session} = iphoneLogMetaData;
@@ -190,6 +201,7 @@ describe('test parse ios logs', () => {
                 expect(serialNumber).toEqual('N/A');
             });
         });
+
     });
 
     xdescribe('test ipad log', () => {
@@ -206,7 +218,16 @@ describe('test parse ios logs', () => {
             expect(result).toBeTruthy();
         });
 
-        describe('ipadLog detail test', () => {
+        xdescribe('ipadLog rows', () => {
+            it('has proper key for each row', () => {
+                  const ipadLogRows = ipadLog.rows;
+                  const firstRow = ipadLogRows[0];
+                  const {AircraftBatteryPowerPercent} = FlightLogHeader;
+                  expect(firstRow).toHaveProperty(AircraftBatteryPowerPercent);
+            })
+        })
+
+        xdescribe('ipadLog metaData test', () => {
             it('parsed log should have correct session info', () => {
                 const ipadLogMetaData = ipadLog.metaData;
                 const {session} = ipadLogMetaData;

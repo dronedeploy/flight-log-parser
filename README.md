@@ -44,7 +44,7 @@ The `parseLog` method of `Flight log parser` takes in a `String` that is generat
 ##### In .js file
 
 ```js
-const {promisify} = require('util');
+const { promisify } = require('util');
 const fs = require('fs');
 const path = require('path');
 const { parseLog } = require ('flight-log-parser');

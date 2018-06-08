@@ -1,12 +1,11 @@
-# TODO
-
+##### TODO
 1. Test on a variety of logs from iOS and Android
 2. Write unit tests
 3. Fill out `src/field-types.ts`
 4. See if we can improve types in general
 5. Open source-ify with good readme, license, and type definitions
 
-# For testing
+##### For internal testing
 1. To run all test files
 
 ```bash
@@ -18,12 +17,143 @@ yarn test
 ```js
    xdescribe("", () => {})
 ```
-
+--- the above will be removed---
 - - -
 
-Flight log parser is a [JavaScript library](https://en.wikipedia.org/wiki/JavaScript_library) for parse [DJI flight logs](https://forum.dji.com/thread-114810-1-1.html). It transform a .log/.txt file into an JS object with property metaData and rows.
+# Flight log parser
+Flight log parser is a JavaScript library for parsing [DJI flight logs](https://forum.dji.com/thread-114810-1-1.html).
 
 
+## Installation
+
+### In Node.js
+
+```bash
+npm install flight-log-parser ?
+```
+### TypeScript
+
+TypeScript is supported internally within each module, no installs required.
+
+
+## How to use
+
+#### parseLog
+The `parseLog` method of `Flight log parser` takes in a `String` that was generated from DJI flight logs and it returns a `FlightLog` object.
+
+##### In .js file
+
+```js
+import { parseLog } from 'flight-log-parser';
+
+const {promisify} = require('util');
+const fs = require('fs');
+const path = require('path');
+
+const readFileAsync = promisify(fs.readFile);
+const filePath = path.join(__dirname, 'YOUR_LOG_FILE_PATH');
+
+readFileAsync(filePath, {encoding: 'utf8'})
+  .then((text) => {
+      // parseLog() returns a FlightLog object
+      const parsedFlightLog = parseLog(text);  
+  })
+  .catch((err) => {
+      console.log('ERROR:', err);
+  });
+
+```
+
+##### FlightLog
+`FlightLog` object separate a flight log to two parts, `FlightLogMetaData` and `FlightLogRow`.
+
+```js
+ FlightLog = {
+  metaData: FlightLogMetaData;
+  rows: FlightLogRow[];
+}
+```
+
+##### FlightLogMetaData
+FlightLogMetaData group related information from the log file to subcategories: appVersion, device, aircraft, battery ...
+
+```js
+FlightLogMetaData = {
+  appVersion: string;
+  session: {
+    id: string;
+    start: Date;
+    end: Date,
+    elapsed: number;
+  };
+  device: {
+    model: string;
+    os: string;
+  };
+  aircraft: {
+    model: string;
+    name: string;
+    firmware: string;
+  };
+  battery: {
+    chargeVolume: number;
+    remainingLifePercent: number;
+    discharges: number;
+    cells: number;
+    firmware: string;
+  };
+  flightController: {
+    serialNumber: string;
+    firmware: string;
+  };
+  gimbal: {
+    firmware: string;
+  };
+  remoteController: {
+    serialNumber: string;
+    firmware: string;
+  };
+  camera: {
+    serialNumber: string;
+  };
+};
+```
+##### FlightLogRow
+DJI flight log creates a row of current flight info at every 0.1s. `FlightLogRow` is an array that contains every row of that flight info.
+
+If you want to retrieve information at 10s after the drone took off, you can do so by asking for the row at index 100.
+```js
+readFileAsync(filePath, {encoding: 'utf8'})
+  .then((text) => {
+      const parsedFlightLog = parseLog(text);
+      const log10sAfterTookOff = parsedFlightLog.rows[100];
+  })
+```
+
+
+
+##### FlightLogHeader
+FlightLogHeader is an enum object that contains all the column names a row of flight info.
+for example :
+```js
+enum FlightLogHeader {
+    DateTime = 'Date/Time (UTC)',
+    ElapsedTime = 'Elapsed Time (sec)',
+    Info = 'Info',
+    DeviceLatitude = 'Device Latitude (Degrees)',
+    DeviceLongitude = 'Device Longitude (Degrees)',
+    DeviceLocationLastUpdated = 'Device Location Last Updated (ms)',
+    AircraftBatteryPowerPercent = 'Aircraft Battery Power (%)',
+    AircraftBatteryCharge = 'Aircraft Battery Charge (mAh)',
+    AircraftBatteryCurrent = 'Aircraft Battery Current (mA)',
+    AircraftBatteryVoltage = 'Aircraft Battery Voltage (mV)',
+    ...
+}
+```
+##### FLIGHT_MODE_MAPPING
+
+
+##### Example output
 ```js
 //Sample result:
  {
@@ -176,22 +306,12 @@ Flight log parser is a [JavaScript library](https://en.wikipedia.org/wiki/JavaSc
 }
 ```
 
-## Installation
+Who is using flight-log-parser?
+--------------------------
+???
 
-### In Node.js
 
-```bash
-npm install flight-log-parser ?
-```
-### TypeScript
+License
+-------
 
-TypeScript is supported internally within each module, no installs required.
-
-## How to use
-
-### In .js file
-
-```js
-import { parseLog } from 'flight-log-parser';
-const data = parseLog(someTextFromSomewhere);
-```
+The code is available under the terms of the [MIT License](http://opensource.org/licenses/MIT).

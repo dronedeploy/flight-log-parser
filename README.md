@@ -17,6 +17,12 @@ yarn test
 ```js
    xdescribe("", () => {})
 ```
+
+* To test only one test case add f to test block.
+
+```js
+   fit(it('', () => {})
+```
 --- the above will be removed---
 - - -
 
@@ -31,10 +37,6 @@ Flight log parser is a JavaScript library for parsing [DJI flight logs](https://
 ```bash
 npm install flight-log-parser ?
 ```
-### TypeScript
-
-TypeScript is supported internally within each module, no installs required.
-
 
 ## How to use
 

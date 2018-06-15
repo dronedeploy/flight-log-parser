@@ -52,7 +52,7 @@ describe('test parse android logs', () => {
             })
         })
 
-        xdescribe('pixel2-inspire2 log metaData test', () => {
+        describe('pixel2-inspire2 log metaData test', () => {
             it('parsed log should have correct session info', () => {
                 const pixel2LogMetaData = pixel2Log.metaData;
                 const {session} = pixel2LogMetaData;

@@ -27,13 +27,13 @@ describe('test parse ios logs', () => {
         expect(iosLogs).toBeTruthy();
     });
 
-    xdescribe('test sampleErrLog log', () => {
+    describe('test sampleErrLog log', () => {
         let sampleErrLog : any;
         beforeAll(async() => {
             sampleErrLog = await parseLog(iosLogs.errorLog);
         });
 
-        xdescribe('sampleErrLog detail test', () => {
+        describe('sampleErrLog detail test', () => {
             it('parsed log should have correct falsy value when session info has no value', () => {
                 const sampleErrLogMetaData = sampleErrLog.metaData;
                 const {session} = sampleErrLogMetaData;
@@ -131,7 +131,7 @@ describe('test parse ios logs', () => {
             })
         })
 
-        xdescribe('iphone-ios11-inspire metaData detail test', () => {
+        describe('iphone-ios11-inspire metaData detail test', () => {
             it('parsed log should have correct session info', () => {
                 const iphoneLogMetaData = iphoneLog.metaData;
                 const {session} = iphoneLogMetaData;
@@ -206,7 +206,7 @@ describe('test parse ios logs', () => {
 
     });
 
-    xdescribe('test ipad log', () => {
+    describe('test ipad log', () => {
         let ipadLog : any;
         beforeAll(async() => {
             ipadLog = await parseLog(iosLogs.ipad);
@@ -220,7 +220,7 @@ describe('test parse ios logs', () => {
             expect(result).toBeTruthy();
         });
 
-        xdescribe('ipadLog rows', () => {
+        describe('ipadLog rows', () => {
             it('has proper key for each row', () => {
                   const ipadLogRows = ipadLog.rows;
                   const firstRow = ipadLogRows[0];
@@ -231,7 +231,7 @@ describe('test parse ios logs', () => {
             })
         })
 
-        xdescribe('ipad-ios11-phantom4 metaData test', () => {
+        describe('ipad-ios11-phantom4 metaData test', () => {
             it('parsed log should have correct session info', () => {
                 const ipadLogMetaData = ipadLog.metaData;
                 const {session} = ipadLogMetaData;

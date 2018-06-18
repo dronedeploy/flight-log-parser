@@ -57,6 +57,7 @@ function parseBody(lines: string[]): Promise<FlightLogRow[]> {
   };
 
   return new Promise((resolve, reject) => {
+    console.log('parse', parse)
     parse(text, options, (err: any, result: string[]) => {
       if (err) {
         return reject(err);
@@ -67,7 +68,6 @@ function parseBody(lines: string[]): Promise<FlightLogRow[]> {
       const logs = rows
         .map((row) => {
           const log = {} as FlightLogRow;
-
           for (let i = 0; i < headers.length; i++) {
             const header = headers[i].trim() as FlightLogHeader;
             let value: any = row[i];
@@ -89,6 +89,7 @@ function parseBody(lines: string[]): Promise<FlightLogRow[]> {
 
           return log;
         });
+
       resolve(logs);
     });
   });

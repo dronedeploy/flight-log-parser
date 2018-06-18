@@ -15,7 +15,8 @@
   },
   "include": [
     "src",
-    "node_modules/@types"
+    "node_modules/@types",
+    "__example__"
   ],
     "atom": {
        "rewriteTsconfig": false

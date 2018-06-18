@@ -150,7 +150,7 @@ enum FlightLogHeader {
 }
 ```
 ##### FLIGHT_MODE_MAPPING
-
+???
 
 ##### Example output
 ```js

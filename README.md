@@ -39,6 +39,11 @@ npm install flight-log-parser ?
 ```
 
 ## How to use
+To run example file
+```bash 
+node dist/__example__/index.js```
+
+
 
 #### parseLog
 The `parseLog` method of `Flight log parser` takes in a `String` that is generated from a DJI flight log and it returns a `FlightLog` object.

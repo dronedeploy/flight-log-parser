@@ -1,6 +1,6 @@
 #DroneDeploy	2.75.0
 #Flight Recorder
-Session ID	5b15986668e34153d51878a5
+Session ID	12345678
 Session Start	06/04/2018 20:54:36
 #Device
 Device Model	iPhone
@@ -9,7 +9,7 @@ Device Operating System	iOS	11.3.1
 Device SSID
 #Aircraft
 Aircraft Model	Matrice 200
-Aircraft Name	dd-m200
+Aircraft Name	123
 Aircraft Firmware	01.01.0900
 #Aircraft Battery
 Full Charge Volume (mAh)	4153
@@ -17,14 +17,14 @@ Remaining Life (%)	98
 Discharges	26
 #Components
 Battery Cells Number	6
-Battery Serial Number	09UADCQ03101RT
+Battery Serial Number	12345678
 Battery Firmware	01.00.00.67
-Flight Controller Serial Number	095XE5L00200CL
+Flight Controller Serial Number	12345678
 Flight Controller Firmware	03.02.44.16
 Gimbal Firmware	01.01.00.21
-Remote Control Serial Number	09KL4A024T
+Remote Control Serial Number	12345678
 Remote Control Firmware	01.01.0010
-Camera Serial Number	09CLE6D006002A
+Camera Serial Number	12345678
 Date/Time (UTC)	Elapsed Time (sec)	Info	Device Latitude (Degrees)	Device Longitude (Degrees)	Device Location Last Updated (ms)	Aircraft Battery Power (%)	Aircraft Battery Charge (mAh)	Aircraft Battery Current (mA)	Aircraft Battery Voltage (mV)	Aircraft Battery Temperature (Fahrenheit)	Aircraft Battery Last Updated (ms)	Aircraft Battery Cell 1 Voltage	Aircraft Battery Cell 2 Voltage	Aircraft Battery Cell 3 Voltage	Aircraft Battery Cell 4 Voltage	Aircraft Battery Cell 5 Voltage	Aircraft Battery Cell 6 Voltage	Aircraft Battery Cell Voltage Last Updated (ms)	Aircraft Latitude (Degrees)	Aircraft Longitude (Degrees)	Aircraft Speed (mph)	Aircraft Barometric Altitude (ft)	Aircraft Heading (Degrees)	Aircraft Vel - X (mph)	Aircraft Vel - Y (mph)	Aircraft Vel - Z (mph)	Aircraft Pitch (Degrees)	Aircraft Roll (Degrees)	Aircraft Satellites	Aircraft Motors On	Aircraft Flying	Aircraft Flight Mode	Aircraft Flight Mode Value	Aircraft IMU Preheating	Aircraft Ultrasonic On	Aircraft Ultrasonic Altitude (ft)	Aircraft Vision On	Aircraft GPS Signal	Aircraft GPS Signal Value	Aircraft No-fly	Aircraft No-fly Value	Aircraft No-fly Latitude (Degrees)	Aircraft No-fly Longitude (Degrees)	Aircraft No-fly Radius (ft)	Home Latitude (Degrees)	Home Longitude (Degrees)	Aircraft Smart Go-home Flight Time Remaining (sec)	Aircraft Smart Go-home Flight Return Time (sec)	Aircraft Smart Go-home Landing Time (sec)	Aircraft Smart Go-home Return Power (%)	Aircraft Smart Go-home Landing Power (%)	Aircraft Smart Go-home Radius (ft)	Aircraft Smart Go-home Countdown (sec)	Aircraft Smart Go-home Requesting	Aircraft System State Last Updated (ms)	Gimbal Pitch (Degrees)	Gimbal Roll (Degrees)	Gimbal Yaw (Degrees)	Gimbal Mode	Gimbal Mode Value	Gimbal Pitch at Stop	Gimbal Roll at Stop	Gimbal Yaw at Stop	Gimbal Status Last Updated (ms)	Landing Gear is Movable	Landing Gear Status	Landing Gear Status Value	Landing Gear Mode	Landing Gear Mode Value	Landing Gear Last Updated (ms)	RC State	RC State Value	RC Left Horizontal	RC Left Vertical	RC Right Horizontal	RC Right Vertical	RC Left Wheel	RC Right Wheel	RC Landing Gear	RC Landing Gear Value	RC Go Home	RC Record 	RC Shutter	RC Playback	RC Pause	RC Custom 1	RC Custom 2	RC State Last Updated (ms)	RC Battery (%)	RC Battery State Last Updated (ms)	RC Sattelites	RC Horizontal Accuaracy (ft)	RC Latitude (Degrees)	RC Longitude (Degrees)	RC GSP Data is Valid	RC GPS State Last Updated (ms)	RC Signal 1	RC Signal 2	RC Signal Last Updated (ms)	LB Signal 1	LB Signal 2	LB Signal Last Updated (ms)	Aircraft Camera Mode	Aircraft Camera Mode Value	Aircraft Camera Overheated	Aircraft Camera Sensor Error	Aircraft Camera Recording	Aircraft Camera Raw Capture	Aircraft Camera Interval Capture	Aircraft Camera Burst Capture	Aircraft Camera Single Capture	Aircraft Camera Storing Photo	Aircraft Camera State Last Updated (ms)	Aircraft Camera SD Card Exists	Aircraft Camera SD Card Remaining (%)	Aircraft Camera SD Card State Last Updated (ms)	Aircraft Camera Changeable Lens Supported	Aircraft Camera Lens Installed	Aircraft Camera Lens Type	Aircraft Camera Lens AF Enabled	Aircraft Camera Lens Focus Mode	Aircraft Camera Lens Focus Mode Value	Aircraft Camera Lens Focus Status	Aircraft Camera Lens Focus Status Value	Aircraft Camera Lens MF Assistant	Aircraft Camera Lens AF Assistant	Aircraft Camera Lens Assistant Working	Aircraft Camera Lens State Last Updated (ms)	Device > Aircraft Distance - XY (ft)
 06/04/2018 20:54:36	0.135	Mission did take off	37.77177140117126	-122.4074382698926	116	0	0	0	0	0	No Data	0	0	0	0			No Data	37.77177056395729	-122.4074025309046	0	0	132.1	0	0	0	0.7000000000000001	-1	13	1	0	TakeOff	41	0	1	0.328084	0	Very Good	4	Fly Zone ClassB Air Space	16	37.63616943359375	-122.3730926513672	55849	37.77182952057346	-122.4075550697127	0	0	0	0	0	0	0	0	57	0	0	132.1000061035156	Yaw Follow	2	0	0	0	55	0	Unknown	0	Unknown	3	No Data	3	2	0	0	0	0	0	0	No Present	0	0	0	0	0	0	0	0	55	0	No Data	0	0	0	0	0	No Data	54	57	55	N/A	N/A	No Data	Shoot Photo	0	0	0	0	0	0	0	0	0	56	1	35.65343	56	1	0	Unknown	0	Manual	0	Idle	0	0	0	0	No Data	10.33502722161643
 06/04/2018 20:54:37	0.234		37.77177140117126	-122.4074382698926	215	0	0	0	0	0	No Data	3905	3905	3885	3901	3908	3904	0	37.77177055227158	-122.407402523654	0	0	132.1	0	0	0	0.7000000000000001	-1	13	1	0	TakeOff	41	0	1	0.328084	0	Very Good	4	Fly Zone ClassB Air Space	16	37.63616943359375	-122.3730926513672	55849	37.77182952057346	-122.4075550697127	0	0	0	0	0	0	0	0	55	0	0	132.1000061035156	Yaw Follow	2	0	0	0	54	0	Unknown	0	Unknown	3	No Data	3	2	0	0	0	0	0	0	No Present	0	0	0	0	0	0	0	0	54	0	No Data	0	0	0	0	0	No Data	54	57	155	N/A	N/A	No Data	Shoot Photo	0	0	0	0	0	0	0	0	0	54	1	35.65343	54	1	0	Unknown	0	Manual	0	Idle	0	0	0	0	No Data	10.33724851697154

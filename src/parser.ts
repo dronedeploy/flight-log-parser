@@ -57,7 +57,6 @@ function parseBody(lines: string[]): Promise<FlightLogRow[]> {
   };
 
   return new Promise((resolve, reject) => {
-    console.log('parse', parse)
     parse(text, options, (err: any, result: string[]) => {
       if (err) {
         return reject(err);

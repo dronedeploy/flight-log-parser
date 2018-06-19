@@ -140,7 +140,7 @@ describe('test parse ios logs', () => {
                 const startDate = new Date("06/04/2018 22:29:00");
                 const endDate = new Date("06/04/2018 22:31:40");
 
-                expect(id).toEqual("5b15bcec1fae218a83b7e76a");
+                expect(id).toEqual("12345678");
                 expect(start).toEqual(startDate);
                 expect(end).toEqual(endDate);
                 expect(elapsed).toEqual(160.408);
@@ -152,7 +152,7 @@ describe('test parse ios logs', () => {
                 const {model, name, firmware} = aircraft;
 
                 expect(model).toEqual("Inspire 1 Pro");
-                expect(name).toEqual("inspire pro");
+                expect(name).toEqual("12345678");
                 expect(firmware).toEqual("1.11.01.50");
             });
 
@@ -191,7 +191,7 @@ describe('test parse ios logs', () => {
                 const {remoteController} = iphoneLogMetaData;
                 const {serialNumber, firmware} = remoteController;
 
-                expect(serialNumber).toEqual("03LL264834");
+                expect(serialNumber).toEqual("12345678");
                 expect(firmware).toEqual("1.2.0.17");
             });
 
@@ -252,7 +252,7 @@ describe('test parse ios logs', () => {
                 const {model, name, firmware} = aircraft;
 
                 expect(model).toEqual("Phantom 4 Pro");
-                expect(name).toEqual("dd-10");
+                expect(name).toEqual("123");
                 expect(firmware).toEqual("01.05.0600");
             });
 
@@ -281,7 +281,7 @@ describe('test parse ios logs', () => {
                 const {flightController} = ipadLogMetaData;
                 const {serialNumber, firmware} = flightController;
 
-                expect(serialNumber).toEqual("07JDE3700201UW");
+                expect(serialNumber).toEqual("12345678");
                 expect(firmware).toEqual("03.02.44.07");
             });
 
@@ -290,7 +290,7 @@ describe('test parse ios logs', () => {
                 const {remoteController} = ipadLogMetaData;
                 const {serialNumber, firmware} = remoteController;
 
-                expect(serialNumber).toEqual("0CKJ202CZ1");
+                expect(serialNumber).toEqual("12345678");
                 expect(firmware).toEqual("01.04.01.00");
             });
 

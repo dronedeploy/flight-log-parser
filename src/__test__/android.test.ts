@@ -73,7 +73,7 @@ describe('test parse android logs', () => {
                 const {model, name, firmware} = aircraft;
 
                 expect(model).toEqual("Inspire 2");
-                expect(name).toEqual("DD Inspire Pro 2 #1");
+                expect(name).toEqual("12345678");
                 expect(firmware).toEqual("01.02.0100");
             });
 
@@ -94,7 +94,7 @@ describe('test parse android logs', () => {
                 const {flightController} = pixel2LogMetaData;
                 const {serialNumber, firmware} = flightController;
 
-                expect(serialNumber).toEqual("095XDC200200RR");
+                expect(serialNumber).toEqual("12345678");
                 expect(firmware).toEqual("03.02.44.09");
             });
 
@@ -111,7 +111,7 @@ describe('test parse android logs', () => {
                 const {remoteController} = pixel2LogMetaData;
                 const {serialNumber, firmware} = remoteController;
 
-                expect(serialNumber).toEqual("09KL3A07VK");
+                expect(serialNumber).toEqual("12345678");
                 expect(firmware).toEqual("01.01.0010");
             });
 
@@ -120,7 +120,7 @@ describe('test parse android logs', () => {
                 const {camera} = pixel2LogMetaData;
                 const {serialNumber} = camera;
 
-                expect(serialNumber).toEqual('09CLDBV00401YQ');
+                expect(serialNumber).toEqual('12345678');
             });
         });
     });

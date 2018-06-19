@@ -1,6 +1,6 @@
 #DroneDeploy	0.0.0
 #Flight Recorder
-Session ID	5b05d265efd0520e45f2b17d
+Session ID	12345678
 Session Start	05/23/2018 20:50:18
 #Device
 Device Model	iPad
@@ -9,7 +9,7 @@ Device Operating System	iOS	11.2.6
 Device SSID
 #Aircraft
 Aircraft Model	Phantom 4 Pro
-Aircraft Name	dd-10
+Aircraft Name	123
 Aircraft Firmware	01.05.0600
 #Aircraft Battery
 Full Charge Volume (mAh)	5842
@@ -19,10 +19,10 @@ Discharges	28
 Battery Cells Number	4
 Battery Serial Number
 Battery Firmware	02.00.07.31
-Flight Controller Serial Number	07JDE3700201UW
+Flight Controller Serial Number	12345678
 Flight Controller Firmware	03.02.44.07
 Gimbal Firmware	01.50.13.17
-Remote Control Serial Number	0CKJ202CZ1
+Remote Control Serial Number	12345678
 Remote Control Firmware	01.04.01.00
 Camera Serial Number
 Date/Time (UTC)	Elapsed Time (sec)	Info	Device Latitude (Degrees)	Device Longitude (Degrees)	Device Location Last Updated (ms)	Aircraft Battery Power (%)	Aircraft Battery Charge (mAh)	Aircraft Battery Current (mA)	Aircraft Battery Voltage (mV)	Aircraft Battery Temperature (Fahrenheit)	Aircraft Battery Last Updated (ms)	Aircraft Battery Cell 1 Voltage	Aircraft Battery Cell 2 Voltage	Aircraft Battery Cell 3 Voltage	Aircraft Battery Cell 4 Voltage	Aircraft Battery Cell Voltage Last Updated (ms)	Aircraft Latitude (Degrees)	Aircraft Longitude (Degrees)	Aircraft Speed (mph)	Aircraft Barometric Altitude (ft)	Aircraft Heading (Degrees)	Aircraft Vel - X (mph)	Aircraft Vel - Y (mph)	Aircraft Vel - Z (mph)	Aircraft Pitch (Degrees)	Aircraft Roll (Degrees)	Aircraft Satellites	Aircraft Motors On	Aircraft Flying	Aircraft Flight Mode	Aircraft Flight Mode Value	Aircraft IMU Preheating	Aircraft Ultrasonic On	Aircraft Ultrasonic Altitude (ft)	Aircraft Vision On	Aircraft GPS Signal	Aircraft GPS Signal Value	Aircraft No-fly	Aircraft No-fly Value	Aircraft No-fly Latitude (Degrees)	Aircraft No-fly Longitude (Degrees)	Aircraft No-fly Radius (ft)	Home Latitude (Degrees)	Home Longitude (Degrees)	Aircraft Smart Go-home Flight Time Remaining (sec)	Aircraft Smart Go-home Flight Return Time (sec)	Aircraft Smart Go-home Landing Time (sec)	Aircraft Smart Go-home Return Power (%)	Aircraft Smart Go-home Landing Power (%)	Aircraft Smart Go-home Radius (ft)	Aircraft Smart Go-home Countdown (sec)	Aircraft Smart Go-home Requesting	Aircraft System State Last Updated (ms)	Gimbal Pitch (Degrees)	Gimbal Roll (Degrees)	Gimbal Yaw (Degrees)	Gimbal Mode	Gimbal Mode Value	Gimbal Pitch at Stop	Gimbal Roll at Stop	Gimbal Yaw at Stop	Gimbal Status Last Updated (ms)	Landing Gear is Movable	Landing Gear Status	Landing Gear Status Value	Landing Gear Mode	Landing Gear Mode Value	Landing Gear Last Updated (ms)	RC State	RC State Value	RC Left Horizontal	RC Left Vertical	RC Right Horizontal	RC Right Vertical	RC Left Wheel	RC Right Wheel	RC Landing Gear	RC Landing Gear Value	RC Go Home	RC Record 	RC Shutter	RC Playback	RC Pause	RC Custom 1	RC Custom 2	RC State Last Updated (ms)	RC Battery (%)	RC Battery State Last Updated (ms)	RC Sattelites	RC Horizontal Accuaracy (ft)	RC Latitude (Degrees)	RC Longitude (Degrees)	RC GSP Data is Valid	RC GPS State Last Updated (ms)	RC Signal 1	RC Signal 2	RC Signal Last Updated (ms)	LB Signal 1	LB Signal 2	LB Signal Last Updated (ms)	Aircraft Camera Mode	Aircraft Camera Mode Value	Aircraft Camera Overheated	Aircraft Camera Sensor Error	Aircraft Camera Recording	Aircraft Camera Raw Capture	Aircraft Camera Interval Capture	Aircraft Camera Burst Capture	Aircraft Camera Single Capture	Aircraft Camera Storing Photo	Aircraft Camera State Last Updated (ms)	Aircraft Camera SD Card Exists	Aircraft Camera SD Card Remaining (%)	Aircraft Camera SD Card State Last Updated (ms)	Aircraft Camera Changeable Lens Supported	Aircraft Camera Lens Installed	Aircraft Camera Lens Type	Aircraft Camera Lens AF Enabled	Aircraft Camera Lens Focus Mode	Aircraft Camera Lens Focus Mode Value	Aircraft Camera Lens Focus Status	Aircraft Camera Lens Focus Status Value	Aircraft Camera Lens MF Assistant	Aircraft Camera Lens AF Assistant	Aircraft Camera Lens Assistant Working	Aircraft Camera Lens State Last Updated (ms)	Device > Aircraft Distance - XY (ft)

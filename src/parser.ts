@@ -94,19 +94,17 @@ function parseBody(lines: string[]): Promise<FlightLogRow[]> {
   });
 };
 
-function findMatch(search: string[], regex: RegExp) {
+function findMatch(search: string[], regex: RegExp, isNum?: boolean) {
   let match;
-
   for (let str of search) {
     match = str.match(regex);
-
     if (match) {
       break;
     }
   }
 
   if (!match) {
-    return 'N/A';
+    return isNum ? "0" : 'N/A';
   }
 
   return match[1];
@@ -121,7 +119,7 @@ function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData 
       id: findMatch(meta, META_REGEX.sessionId),
       start: new Date(findMatch(meta, META_REGEX.sessionStart)),
       end: new Date(findMatch(meta, META_REGEX.sessionEnd)),
-      elapsed: parseFloat(findMatch(meta, META_REGEX.elapsedTime)),
+      elapsed: parseFloat(findMatch(meta, META_REGEX.elapsedTime, true)),
     },
     device: {
       model: findMatch(meta, META_REGEX.deviceModel),
@@ -133,10 +131,10 @@ function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData 
       firmware: findMatch(meta, META_REGEX.aircraftFirmware),
     },
     battery: {
-      chargeVolume: parseInt(findMatch(meta, META_REGEX.batteryChargeVolume), 10),
-      remainingLifePercent: parseInt(findMatch(meta, META_REGEX.batteryRemainingLife), 10),
-      discharges: parseInt(findMatch(meta, META_REGEX.batteryDischarges), 10),
-      cells: parseInt(findMatch(meta, META_REGEX.batteryCells), 10),
+      chargeVolume: parseInt(findMatch(meta, META_REGEX.batteryChargeVolume, true), 10),
+      remainingLifePercent: parseInt(findMatch(meta, META_REGEX.batteryRemainingLife, true), 10),
+      discharges: parseInt(findMatch(meta, META_REGEX.batteryDischarges, true), 10),
+      cells: parseInt(findMatch(meta, META_REGEX.batteryCells, true), 10),
       firmware: findMatch(meta, META_REGEX.batteryFirmware),
     },
     flightController: {

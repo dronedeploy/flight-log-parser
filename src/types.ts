@@ -220,4 +220,3 @@ export const FLIGHT_MODE_MAPPING = {
   43: 'GPS Gentle',
   255: 'Unknown',
 };
-

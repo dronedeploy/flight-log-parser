@@ -9,7 +9,7 @@ const readFileAsync = promisify(fs.readFile);
 
 // Maybe we can read all files from one folder?
 const androidFilePath = path.join(__dirname, '/../../testlog/pixel2-inspire2.log');
-// const iosFilePath2 = path.join(__dirname, '../testlog/iphone-ios11-inspire.log');
+
 describe('test parse android logs', () => {
     let androidLogs : any;
     beforeAll(async() => {
@@ -45,10 +45,8 @@ describe('test parse android logs', () => {
             it('has proper key for each row', () => {
                   const pixel2LogRows = pixel2Log.rows;
                   const firstRow = pixel2LogRows[0];
-                  const keyLength = Object.keys(firstRow).length;
                   const {AircraftBatteryPowerPercent} = FlightLogHeader;
                   expect(firstRow).toHaveProperty(AircraftBatteryPowerPercent);
-                  expect(keyLength).toBe(120);
             })
         })
 
@@ -61,7 +59,7 @@ describe('test parse android logs', () => {
                 const startDate = new Date("06/04/2018 20:32:30");
                 const endDate = new Date("06/04/2018 20:34:55");
 
-                expect(id).toEqual("2018-06-04-203230-118");
+                expect(id).toEqual("12345678");
                 expect(start).toEqual(startDate);
                 expect(end).toEqual(endDate);
                 expect(elapsed).toEqual(145.0);
@@ -73,7 +71,7 @@ describe('test parse android logs', () => {
                 const {model, name, firmware} = aircraft;
 
                 expect(model).toEqual("Inspire 2");
-                expect(name).toEqual("12345678");
+                expect(name).toEqual("123");
                 expect(firmware).toEqual("01.02.0100");
             });
 

@@ -156,6 +156,7 @@ export type FlightLogMetaData = {
     discharges: number;
     cells: number;
     firmware: string;
+    serialNumber: string;
   };
   flightController: {
     serialNumber: string;
@@ -220,4 +221,3 @@ export const FLIGHT_MODE_MAPPING = {
   43: 'GPS Gentle',
   255: 'Unknown',
 };
-

@@ -18,13 +18,19 @@
   "jest": {
     "transform": {
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
-    }
+    },
+    "testRegex": "\\.(test|spec)\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ]
   },
   "dependencies": {
     "csv-parse": "^2.4.0"
   },
   "devDependencies": {
     "@types/csv-parse": "^1.1.11",
+    "@types/jest": "^23.0.0",
     "@types/node": "^10.1.2",
     "jest": "^22.4.4",
     "lodash.camelcase": "^4.3.0",

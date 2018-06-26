@@ -156,6 +156,7 @@ export type FlightLogMetaData = {
     discharges: number;
     cells: number;
     firmware: string;
+    serialNumber: string;
   };
   flightController: {
     serialNumber: string;

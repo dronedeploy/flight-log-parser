@@ -60,8 +60,9 @@ describe('test parse ios logs', () => {
             it('parsed log should have correct falsy value when battery info has no value', () => {
                 const sampleErrLogMetaData = sampleErrLog.metaData;
                 const { battery } = sampleErrLogMetaData;
-                const { chargeVolume, remainingLifePercent, discharges, cells, firmware } = battery;
+                const { chargeVolume, remainingLifePercent, discharges, cells, firmware, serialNumber } = battery;
                 expect(chargeVolume).toEqual(0);
+                expect(serialNumber).toEqual('N/A');
                 expect(Number.isNaN(chargeVolume)).toBeTruthy();
                 expect(Number.isNaN(remainingLifePercent)).toBeTruthy();
                 expect(Number.isNaN(discharges)).toBeTruthy();

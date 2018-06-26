@@ -61,8 +61,9 @@ describe('test parse ios logs', () => {
             it('parsed log should have correct falsy value when battery info has no value', () => {
                 const sampleErrLogMetaData = sampleErrLog.metaData;
                 const {battery} = sampleErrLogMetaData;
-                const {chargeVolume, remainingLifePercent, discharges, cells, firmware} = battery;
+                const {chargeVolume, remainingLifePercent, discharges, cells, firmware, serialNumber} = battery;
 
+                expect(serialNumber).toEqual('N/A');
                 expect(chargeVolume).toEqual(0);
                 expect(remainingLifePercent).toEqual(0);
                 expect(discharges).toEqual(0);
@@ -157,8 +158,8 @@ describe('test parse ios logs', () => {
             it('parsed log should have correct battery info', () => {
                 const iphoneLogMetaData = iphoneLog.metaData;
                 const {battery} = iphoneLogMetaData;
-                const {chargeVolume, remainingLifePercent, discharges, cells, firmware} = battery;
-
+                const {chargeVolume, remainingLifePercent, discharges, cells, firmware, serialNumber} = battery;
+                expect(serialNumber).toEqual('12345678');
                 expect(chargeVolume).toEqual(4287);
                 expect(remainingLifePercent).toEqual(83);
                 expect(discharges).toEqual(69);
@@ -255,8 +256,8 @@ describe('test parse ios logs', () => {
             it('parsed log should have correct battery info', () => {
                 const ipadLogMetaData = ipadLog.metaData;
                 const {battery} = ipadLogMetaData;
-                const {chargeVolume, remainingLifePercent, discharges, cells, firmware} = battery;
-
+                const {chargeVolume, remainingLifePercent, discharges, cells, firmware, serialNumber} = battery;
+                expect(serialNumber).toEqual('N/A');
                 expect(chargeVolume).toEqual(5842);
                 expect(remainingLifePercent).toEqual(0);
                 expect(discharges).toEqual(28);

@@ -76,7 +76,8 @@ xdescribe('test parse android logs', () => {
             it('parsed log should have correct battery info', () => {
                 const pixel2LogMetaData = pixel2Log.metaData;
                 const { battery } = pixel2LogMetaData;
-                const { chargeVolume, remainingLifePercent, discharges, cells, firmware } = battery;
+                const { chargeVolume, remainingLifePercent, discharges, cells, firmware, serialNumber } = battery;
+                expect(serialNumber).toEqual('12345678');
                 expect(chargeVolume).toEqual(4152);
                 expect(remainingLifePercent).toEqual(98);
                 expect(discharges).toEqual(27);

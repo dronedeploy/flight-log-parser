@@ -40,7 +40,7 @@ npm install flight-log-parser ?
 
 ## How to use
 To run example file
-```bash 
+```bash
 node dist/__example__/index.js```
 
 
@@ -103,11 +103,12 @@ FlightLogMetaData = {
     firmware: string;
   };
   battery: {
-    chargeVolume: number;
-    remainingLifePercent: number;
-    discharges: number;
     cells: number;
+    chargeVolume: number;
+    discharges: number;
+    remainingLifePercent: number;
     firmware: string;
+    serialNumber: string;
   };
   flightController: {
     serialNumber: string;
@@ -164,7 +165,7 @@ enum FlightLogHeader {
     metaData : {
         appVersion: '2.75.0',
         session:
-         { id: '5b15bcec1fae218a83b7e76a',
+         { id: '12345678',
            start: 2018-06-05T05:29:00.000Z,
            end: 2018-06-05T05:31:40.000Z,
            elapsed: 160.408 },
@@ -181,7 +182,7 @@ enum FlightLogHeader {
            firmware: '03.09.00.00' },
         flightController: { serialNumber: 'N/A', firmware: '02.04.20.50' },
         gimbal: { firmware: '01.31.01.67' },
-        remoteController: { serialNumber: '03LL264834', firmware: '1.2.0.17' },
+        remoteController: { serialNumber: '12345678', firmware: '1.2.0.17' },
         camera: { serialNumber: 'N/A' }
     },
     rows:  [

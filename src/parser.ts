@@ -17,6 +17,7 @@ const META_REGEX = {
   batteryRemainingLife: /^Remaining Life \(%\)\s+(.+)$/,
   batteryDischarges: /^Discharges\s+(.+)$/,
   batteryCells: /^Battery Cells Number\s+(.+)$/,
+  batterySerialNumber: /^Battery Serial Number\s+(.+)$/,
   batteryFirmware: /^Battery Firmware\s+(.+)$/,
   fcSerialNumber: /^Flight Controller Serial Number\s+(.+)$/,
   fcFirmware: /^Flight Controller Firmware\s+(.+)$/,
@@ -136,6 +137,7 @@ function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData 
       discharges: parseInt(findMatch(meta, META_REGEX.batteryDischarges, true), 10),
       cells: parseInt(findMatch(meta, META_REGEX.batteryCells, true), 10),
       firmware: findMatch(meta, META_REGEX.batteryFirmware),
+      serialNumber: findMatch(meta, META_REGEX.batterySerialNumber),
     },
     flightController: {
       serialNumber: findMatch(meta, META_REGEX.fcSerialNumber),

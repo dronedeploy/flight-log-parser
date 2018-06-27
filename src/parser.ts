@@ -113,14 +113,30 @@ function findMatch(search: string[], regex: RegExp, isNum?: boolean) {
 
 function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData {
   const meta = [...headers, ...footers];
+  let end = findMatch(meta, META_REGEX.sessionEnd);
+  let elapsed = findMatch(meta, META_REGEX.elapsedTime);
+
+  // we have an invalid footer, which means our log stopped abruptly and is truncated. `footer` is likely the last
+  // three lines of the regular log file instead, so we can grab values off of that instead. it's pretty brittle,
+  // but at least it gives us a good shot of having valid data.
+  if (end === 'N/A' || elapsed === 'N/A') {
+    const lastLine = footers[footers.length - 1];
+    const pieces = lastLine.split('\t')
+
+    // if we don't have at least two pieces, i don't know what is in `footer` so i'm just going to leave it alone
+    if (pieces.length >= 2) {
+      end = pieces[0];
+      elapsed = pieces[1];
+    }
+  }
 
   return {
     appVersion: findMatch(meta, META_REGEX.appVersion),
     session: {
       id: findMatch(meta, META_REGEX.sessionId),
       start: new Date(findMatch(meta, META_REGEX.sessionStart)),
-      end: new Date(findMatch(meta, META_REGEX.sessionEnd)),
-      elapsed: parseFloat(findMatch(meta, META_REGEX.elapsedTime, true)),
+      end: new Date(end),
+      elapsed: elapsed === 'N/A' ? 0 : parseFloat(elapsed),
     },
     device: {
       model: findMatch(meta, META_REGEX.deviceModel),

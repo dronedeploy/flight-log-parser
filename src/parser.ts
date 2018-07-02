@@ -116,12 +116,13 @@ function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData 
   let end = findMatch(meta, META_REGEX.sessionEnd);
   let elapsed = findMatch(meta, META_REGEX.elapsedTime);
 
-  // we have an invalid footer, which means our log stopped abruptly and is truncated. `footer` is likely the last
-  // three lines of the regular log file instead, so we can grab values off of that instead. it's pretty brittle,
-  // but at least it gives us a good shot of having valid data.
+  // if we weren't able to parse an end date or an elapsed time from our footer (which is really just the last three
+  // lines of the log file), it's likely that we have a truncated log file. if that's the case, we can still salvage
+  // some valid data by parsing the date and elapsed time from the very last log row in the file, which is what we're
+  // doing below. it's pretty brittle, but it's preferred to having an invalid end date and a NaN elapsed time.
   if (end === 'N/A' || elapsed === 'N/A') {
     const lastLine = footers[footers.length - 1];
-    const pieces = lastLine.split('\t')
+    const pieces = lastLine.split('\t');
 
     // if we don't have at least two pieces, i don't know what is in `footer` so i'm just going to leave it alone
     if (pieces.length >= 2) {

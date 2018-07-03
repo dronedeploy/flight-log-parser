@@ -113,14 +113,31 @@ function findMatch(search: string[], regex: RegExp, isNum?: boolean) {
 
 function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData {
   const meta = [...headers, ...footers];
+  let end = findMatch(meta, META_REGEX.sessionEnd);
+  let elapsed = findMatch(meta, META_REGEX.elapsedTime);
+
+  // if we weren't able to parse an end date or an elapsed time from our footer (which is really just the last three
+  // lines of the log file), it's likely that we have a truncated log file. if that's the case, we can still salvage
+  // some valid data by parsing the date and elapsed time from the very last log row in the file, which is what we're
+  // doing below. it's pretty brittle, but it's preferred to having an invalid end date and a NaN elapsed time.
+  if (end === 'N/A' || elapsed === 'N/A') {
+    const lastLine = footers[footers.length - 1];
+    const pieces = lastLine.split('\t');
+
+    // if we don't have at least two pieces, i don't know what is in `footer` so i'm just going to leave it alone
+    if (pieces.length >= 2) {
+      end = pieces[0];
+      elapsed = pieces[1];
+    }
+  }
 
   return {
     appVersion: findMatch(meta, META_REGEX.appVersion),
     session: {
       id: findMatch(meta, META_REGEX.sessionId),
       start: new Date(findMatch(meta, META_REGEX.sessionStart)),
-      end: new Date(findMatch(meta, META_REGEX.sessionEnd)),
-      elapsed: parseFloat(findMatch(meta, META_REGEX.elapsedTime, true)),
+      end: new Date(end),
+      elapsed: elapsed === 'N/A' ? 0 : parseFloat(elapsed),
     },
     device: {
       model: findMatch(meta, META_REGEX.deviceModel),

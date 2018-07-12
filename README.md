@@ -6,7 +6,7 @@ Flight log parser is a JavaScript library for parsing [DJI flight logs](https://
 ### In Node.js
 
 ```bash
-npm install flight-log-parser ?
+npm install dronedeploy-flight-log-parser 
 ```
 
 ## How to use
@@ -126,8 +126,6 @@ enum FlightLogHeader {
     ...
 }
 ```
-##### FLIGHT_MODE_MAPPING
-???
 
 ##### Example output
 ```js

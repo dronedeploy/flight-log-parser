@@ -79,7 +79,7 @@ export enum FlightLogHeader {
   RCLandingGear = 'RC Landing Gear',
   RCLandingGearValue = 'RC Landing Gear Value',
   RCGoHome = 'RC Go Home',
-  RCRecord  = 'RC Record ',
+  RCRecord = 'RC Record ',
   RCShutter = 'RC Shutter',
   RCPlayback = 'RC Playback',
   RCPause = 'RC Pause',
@@ -130,7 +130,7 @@ export enum FlightLogHeader {
 }
 
 export type FlightLogRow = {
-  [prop in FlightLogHeader]: any; // because csv
+  [prop in FlightLogHeader]: any // because csv
 };
 
 export type FlightLogMetaData = {
@@ -138,7 +138,7 @@ export type FlightLogMetaData = {
   session: {
     id: string;
     start: Date;
-    end: Date,
+    end: Date;
     elapsed: number;
   };
   device: {
@@ -177,7 +177,7 @@ export type FlightLogMetaData = {
 export type FlightLog = {
   metaData: FlightLogMetaData;
   rows: FlightLogRow[];
-}
+};
 
 // based off of types in ios/android SDK FlightMode enums
 export const FLIGHT_MODE_MAPPING = {

@@ -65,35 +65,34 @@ function parseBody(lines: string[]): Promise<FlightLogRow[]> {
 
       const [headers, ...rows] = result;
 
-      const logs = rows
-        .map((row) => {
-          const log = {} as FlightLogRow;
-          for (let i = 0; i < headers.length; i++) {
-            const header = headers[i].trim() as FlightLogHeader;
-            let value: any = row[i];
+      const logs = rows.map((row) => {
+        const log = {} as FlightLogRow;
+        for (let i = 0; i < headers.length; i++) {
+          const header = headers[i].trim() as FlightLogHeader;
+          let value: any = row[i];
 
-            if (INT_FIELDS.has(header)) {
-              value = parseInt(value, 10);
-            }
-
-            if (FLOAT_FIELDS.has(header)) {
-              value = parseFloat(value);
-            }
-
-            if (BOOL_FIELDS.has(header)) {
-              value = value !== '0';
-            }
-
-            log[header] = value;
+          if (INT_FIELDS.has(header)) {
+            value = parseInt(value, 10);
           }
 
-          return log;
-        });
+          if (FLOAT_FIELDS.has(header)) {
+            value = parseFloat(value);
+          }
+
+          if (BOOL_FIELDS.has(header)) {
+            value = value !== '0';
+          }
+
+          log[header] = value;
+        }
+
+        return log;
+      });
 
       resolve(logs);
     });
   });
-};
+}
 
 function findMatch(search: string[], regex: RegExp, isNum?: boolean) {
   let match;
@@ -105,11 +104,11 @@ function findMatch(search: string[], regex: RegExp, isNum?: boolean) {
   }
 
   if (!match) {
-    return isNum ? "0" : 'N/A';
+    return isNum ? '0' : 'N/A';
   }
 
   return match[1];
-};
+}
 
 function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData {
   const meta = [...headers, ...footers];
@@ -171,4 +170,4 @@ function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData 
       serialNumber: findMatch(meta, META_REGEX.cameraSerialNumber),
     },
   };
-};
+}

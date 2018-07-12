@@ -1,41 +1,12 @@
-##### TODO
-1. Test on a variety of logs from iOS and Android
-2. Write unit tests
-3. Fill out `src/field-types.ts`
-4. See if we can improve types in general
-5. Open source-ify with good readme, license, and type definitions
-
-##### For internal testing
-1. To run all test files
-
-```bash
-yarn test
-```
-
-* To skip test by add x to describe block.
-
-```js
-   xdescribe("", () => {})
-```
-
-* To test only one test case add f to test block.
-
-```js
-   fit(it('', () => {})
-```
---- the above will be removed---
-- - -
-
 # Flight log parser
 Flight log parser is a JavaScript library for parsing [DJI flight logs](https://forum.dji.com/thread-114810-1-1.html).
-
 
 ## Installation
 
 ### In Node.js
 
 ```bash
-npm install flight-log-parser ?
+npm install dronedeploy-flight-log-parser 
 ```
 
 ## How to use
@@ -155,8 +126,6 @@ enum FlightLogHeader {
     ...
 }
 ```
-##### FLIGHT_MODE_MAPPING
-???
 
 ##### Example output
 ```js
@@ -311,11 +280,6 @@ enum FlightLogHeader {
     ]
 }
 ```
-
-Who is using flight-log-parser?
---------------------------
-???
-
 
 License
 -------

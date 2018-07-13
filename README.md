@@ -1,5 +1,5 @@
 # Flight log parser
-Flight log parser is a JavaScript library for parsing [DroneDelpoy flight logs](https://support.dronedeploy.com/v2.0/docs/gathering-flight-logs).
+Flight log parser is a JavaScript library for parsing [DroneDeploy flight logs](https://support.dronedeploy.com/v2.0/docs/gathering-flight-logs).
 
 ## Installation
 ### In Node.js

@@ -285,7 +285,6 @@ yarn build
 ```
 
 4. **Run tests**
---
   * To run all test files
 
   ```bash

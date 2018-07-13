@@ -13,7 +13,7 @@ To use the DroneDeploy flight log parser, include it as normal:
 const { parseLog } = require ('flight-log-parser');
 ```
 
-##### In index.js file
+##### A sample file:
 ```js
 const { promisify } = require('util');
 const fs = require('fs');
@@ -33,15 +33,15 @@ readFileAsync(filePath, {encoding: 'utf8'})
   });
 ```
 
-You can run the provided example file:
+You can run the provided example file by:
 ```bash
 $ node dist/__example__/index.js
 ```
 
-#### parseLog
+### Function method
 The `parseLog` method of `Flight log parser` takes in a `String` that is generated from a DroneDeploy flight log and it returns a `FlightLog` object.
 
-
+### Type objects
 ##### FlightLog
 `FlightLog` object separates a flight log to two parts: `metaData` and `rows`.
 ```js

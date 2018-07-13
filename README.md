@@ -285,24 +285,24 @@ yarn build
 ```
 
 4. **Run tests**
-##### For internal testing
-1. To run all test files
+--
+  * To run all test files
 
-```bash
-yarn test
-```
+  ```bash
+     yarn test
+  ```
 
-* To skip test by add x to describe block.
+  * To skip test by add x to describe block.
 
-```js
-   xdescribe("", () => {})
-```
+  ```js
+     xdescribe("", () => {})
+  ```
 
-* To test only one test case add f to test block.
+  * To test only one test case add f to test block.
 
-```js
-   fit(it('', () => {})
-```
+  ```js
+     fit(it('', () => {})
+  ```
 
 3. **Commit** changes to your own branch
 4. **Push** your work back up to your fork

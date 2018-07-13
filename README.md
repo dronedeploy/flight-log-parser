@@ -6,13 +6,14 @@ Flight log parser is a JavaScript library for parsing [DJI flight logs](https://
 ### In Node.js
 
 ```bash
-npm install flight-log-parser
+npm install @dronedeploy/flight-log-parser
 ```
 
 ## How to use
 To run example file
 ```bash
-node dist/__example__/index.js```
+node dist/__example__/index.js
+```
 
 
 

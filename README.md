@@ -1,5 +1,5 @@
 # Flight log parser
-Flight log parser is a JavaScript library for parsing [dronedelpoy flight logs](https://support.dronedeploy.com/v2.0/docs/gathering-flight-logs).
+Flight log parser is a JavaScript library for parsing [DroneDelpoy flight logs](https://support.dronedeploy.com/v2.0/docs/gathering-flight-logs).
 
 ## Installation
 ### In Node.js
@@ -278,31 +278,14 @@ enum FlightLogHeader {
 1. **Fork** the repo on GitHub
 2. **Clone** the project to your own machine
 3. **Run the repo**
-
-```bash
-yarn install
-yarn build  
-```
-
+  ```bash
+    yarn install
+    yarn build  
+  ```
 4. **Run tests**
-  * To run all test files
-
   ```bash
      yarn test
   ```
-
-  * To skip test by add x to describe block.
-
-  ```js
-     xdescribe("", () => {})
-  ```
-
-  * To test only one test case add f to test block.
-
-  ```js
-     fit(it('', () => {})
-  ```
-
 3. **Commit** changes to your own branch
 4. **Push** your work back up to your fork
 5. Submit a **Pull request** so that we can review your changes

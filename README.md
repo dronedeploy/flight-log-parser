@@ -1,26 +1,22 @@
 # Flight log parser
-Flight log parser is a JavaScript library for parsing [DJI flight logs](https://forum.dji.com/thread-114810-1-1.html).
+Flight log parser is a JavaScript library for parsing [DroneDeploy flight logs](https://support.dronedeploy.com/v2.0/docs/gathering-flight-logs).
 
 ## Installation
-
 ### In Node.js
-
 ```bash
-npm install dronedeploy-flight-log-parser 
+npm install @dronedeploy/flight-log-parser
 ```
 
 ## How to use
 To run example file
 ```bash
-node dist/__example__/index.js```
-
-
+node dist/__example__/index.js
+```
 
 #### parseLog
 The `parseLog` method of `Flight log parser` takes in a `String` that is generated from a DJI flight log and it returns a `FlightLog` object.
 
 ##### In .js file
-
 ```js
 const { promisify } = require('util');
 const fs = require('fs');
@@ -38,12 +34,10 @@ readFileAsync(filePath, {encoding: 'utf8'})
   .catch((err) => {
       console.log('ERROR:', err);
   });
-
 ```
 
 ##### FlightLog
 `FlightLog` object separates a flight log to two parts: `metaData` and `rows`.
-
 ```js
  // Type definitions
  FlightLog = {
@@ -54,7 +48,6 @@ readFileAsync(filePath, {encoding: 'utf8'})
 
 ##### FlightLogMetaData
 `FlightLogMetaData` groups related information from the log file to subcategories: appVersion, device, aircraft, battery ...
-
 ```js
 FlightLogMetaData = {
   appVersion: string;
@@ -280,6 +273,22 @@ enum FlightLogHeader {
     ]
 }
 ```
+
+## Contributing  
+1. **Fork** the repo on GitHub
+2. **Clone** the project to your own machine
+3. **Run the repo**
+  ```bash
+    yarn install
+    yarn build  
+  ```
+4. **Run tests**
+  ```bash
+     yarn test
+  ```
+3. **Commit** changes to your own branch
+4. **Push** your work back up to your fork
+5. Submit a **Pull request** so that we can review your changes
 
 License
 -------

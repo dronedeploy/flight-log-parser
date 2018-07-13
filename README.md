@@ -2,19 +2,23 @@
 Flight log parser is a JavaScript library for parsing [DroneDeploy flight logs](https://support.dronedeploy.com/v2.0/docs/gathering-flight-logs).
 
 ## Installation
-### In Node.js
+
 ```bash
 npm install @dronedeploy/flight-log-parser
 ```
 
 ## How to use
-To run example file
+#### parseLog
+The `parseLog` method of `Flight log parser` takes in a `String` that is generated from a DJI flight log and it returns a `FlightLog` object.
+To use the DroneDeploy flight log parser, include it as normal:
+```js
+const { parseLog } = require ('flight-log-parser');
+```
+
+Run example file
 ```bash
 node dist/__example__/index.js
 ```
-
-#### parseLog
-The `parseLog` method of `Flight log parser` takes in a `String` that is generated from a DJI flight log and it returns a `FlightLog` object.
 
 ##### In .js file
 ```js

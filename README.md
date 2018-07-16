@@ -291,8 +291,7 @@ enum FlightLogHeader {
   ```bash
      $ yarn test
   ```
-3. **Commit** changes to your own branch
-4. **Push** your work back up to your fork
+5. **Commit and Push** changes to your own branch
 5. Submit a **Pull request** so that we can review your changes
 
 License

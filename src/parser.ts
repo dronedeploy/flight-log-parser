@@ -17,6 +17,7 @@ const META_REGEX = {
   batteryRemainingLife: /^Remaining Life \(%\)\s+(.+)$/,
   batteryDischarges: /^Discharges\s+(.+)$/,
   batteryCells: /^Battery Cells Number\s+(.+)$/,
+  batterySerialNumber: /^Battery Serial Number\s+(.+)$/,
   batteryFirmware: /^Battery Firmware\s+(.+)$/,
   fcSerialNumber: /^Flight Controller Serial Number\s+(.+)$/,
   fcFirmware: /^Flight Controller Firmware\s+(.+)$/,
@@ -64,65 +65,78 @@ function parseBody(lines: string[]): Promise<FlightLogRow[]> {
 
       const [headers, ...rows] = result;
 
-      const logs = rows
-        .map((row) => {
-          const log = {} as FlightLogRow;
+      const logs = rows.map((row) => {
+        const log = {} as FlightLogRow;
+        for (let i = 0; i < headers.length; i++) {
+          const header = headers[i].trim() as FlightLogHeader;
+          let value: any = row[i];
 
-          for (let i = 0; i < headers.length; i++) {
-            const header = headers[i].trim() as FlightLogHeader;
-            let value: any = row[i];
-
-            if (INT_FIELDS.has(header)) {
-              value = parseInt(value, 10);
-            }
-
-            if (FLOAT_FIELDS.has(header)) {
-              value = parseFloat(value);
-            }
-
-            if (BOOL_FIELDS.has(header)) {
-              value = value !== '0';
-            }
-
-            log[header] = value;
+          if (INT_FIELDS.has(header)) {
+            value = parseInt(value, 10);
           }
 
-          return log;
-        });
+          if (FLOAT_FIELDS.has(header)) {
+            value = parseFloat(value);
+          }
+
+          if (BOOL_FIELDS.has(header)) {
+            value = value !== '0';
+          }
+
+          log[header] = value;
+        }
+
+        return log;
+      });
 
       resolve(logs);
     });
   });
-};
+}
 
-function findMatch(search: string[], regex: RegExp) {
+function findMatch(search: string[], regex: RegExp, isNum?: boolean) {
   let match;
-
   for (let str of search) {
     match = str.match(regex);
-
     if (match) {
       break;
     }
   }
 
   if (!match) {
-    return 'N/A';
+    return isNum ? '0' : 'N/A';
   }
 
   return match[1];
-};
+}
 
 function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData {
   const meta = [...headers, ...footers];
+  let end = findMatch(meta, META_REGEX.sessionEnd);
+  let elapsed = findMatch(meta, META_REGEX.elapsedTime);
+
+  // if we weren't able to parse an end date or an elapsed time from our footer (which is really just the last three
+  // lines of the log file), it's likely that we have a truncated log file. if that's the case, we can still salvage
+  // some valid data by parsing the date and elapsed time from the very last log row in the file, which is what we're
+  // doing below. it's pretty brittle, but it's preferred to having an invalid end date and a NaN elapsed time.
+  if (end === 'N/A' || elapsed === 'N/A') {
+    const lastLine = footers[footers.length - 1];
+    const pieces = lastLine.split('\t');
+
+    // if we don't have at least two pieces, i don't know what is in `footer` so i'm just going to leave it alone
+    if (pieces.length >= 2) {
+      end = pieces[0];
+      elapsed = pieces[1];
+    }
+  }
 
   return {
     appVersion: findMatch(meta, META_REGEX.appVersion),
     session: {
       id: findMatch(meta, META_REGEX.sessionId),
       start: new Date(findMatch(meta, META_REGEX.sessionStart)),
-      end: new Date(findMatch(meta, META_REGEX.sessionEnd)),
-      elapsed: parseFloat(findMatch(meta, META_REGEX.elapsedTime)),
+      end: new Date(end),
+      elapsed: elapsed === 'N/A' ? 0 : parseFloat(elapsed),
     },
     device: {
       model: findMatch(meta, META_REGEX.deviceModel),
@@ -134,11 +148,12 @@ function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData 
       firmware: findMatch(meta, META_REGEX.aircraftFirmware),
     },
     battery: {
-      chargeVolume: parseInt(findMatch(meta, META_REGEX.batteryChargeVolume), 10),
-      remainingLifePercent: parseInt(findMatch(meta, META_REGEX.batteryRemainingLife), 10),
-      discharges: parseInt(findMatch(meta, META_REGEX.batteryDischarges), 10),
-      cells: parseInt(findMatch(meta, META_REGEX.batteryCells), 10),
+      chargeVolume: parseInt(findMatch(meta, META_REGEX.batteryChargeVolume, true), 10),
+      remainingLifePercent: parseInt(findMatch(meta, META_REGEX.batteryRemainingLife, true), 10),
+      discharges: parseInt(findMatch(meta, META_REGEX.batteryDischarges, true), 10),
+      cells: parseInt(findMatch(meta, META_REGEX.batteryCells, true), 10),
       firmware: findMatch(meta, META_REGEX.batteryFirmware),
+      serialNumber: findMatch(meta, META_REGEX.batterySerialNumber),
     },
     flightController: {
       serialNumber: findMatch(meta, META_REGEX.fcSerialNumber),
@@ -155,5 +170,4 @@ function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData 
       serialNumber: findMatch(meta, META_REGEX.cameraSerialNumber),
     },
   };
-};
-
+}

@@ -1,9 +1,9 @@
 const { promisify } = require('util');
 const fs = require('fs');
 const path = require('path');
-const { parseLog } = require ('../flight-log-parser.js');
+const { parseLog } = require ('@dronedeploy/flight-log-parser');
 const readFileAsync = promisify(fs.readFile);
-const filePath = path.join(__dirname, '/../../testlog/ipad-ios11-phantom4.log');
+const filePath = path.join(__dirname, './sample.log');
 
 readFileAsync(filePath, {encoding: 'utf8'})
   .then((text) => {

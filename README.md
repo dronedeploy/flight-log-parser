@@ -10,7 +10,7 @@ $ npm install @dronedeploy/flight-log-parser
 ## How to use
 To use the DroneDeploy flight log parser, include it as normal:
 ```js
-const { parseLog } = require ('flight-log-parser');
+const { parseLog } = require ('@dronedeploy/flight-log-parser');
 ```
 
 ##### Example file:
@@ -18,7 +18,7 @@ const { parseLog } = require ('flight-log-parser');
 const { promisify } = require('util');
 const fs = require('fs');
 const path = require('path');
-const { parseLog } = require ('flight-log-parser');
+const { parseLog } = require ('@dronedeploy/flight-log-parser');
 
 const readFileAsync = promisify(fs.readFile);
 const filePath = path.join(__dirname, 'YOUR_LOG_FILE_PATH');

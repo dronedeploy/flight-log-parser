@@ -13,7 +13,7 @@ To use the DroneDeploy flight log parser, include it as normal:
 const { parseLog } = require ('flight-log-parser');
 ```
 
-##### A sample file:
+##### Example file:
 ```js
 const { promisify } = require('util');
 const fs = require('fs');

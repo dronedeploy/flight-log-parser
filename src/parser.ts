@@ -1,4 +1,4 @@
-import parse from 'csv-parse';
+const parse = require('csv-parse');
 
 import { FlightLogRow, FlightLogHeader, FlightLogMetaData, FlightLog } from './types';
 import { INT_FIELDS, BOOL_FIELDS, FLOAT_FIELDS } from './field-types';

@@ -126,7 +126,7 @@ export declare enum FlightLogHeader {
     AircraftCameraLensAFAssistant = "Aircraft Camera Lens AF Assistant",
     AircraftCameraLensAssistantWorking = "Aircraft Camera Lens Assistant Working",
     AircraftCameraLensStateLastUpdated = "Aircraft Camera Lens State Last Updated (ms)",
-    DeviceToAircraftDistance = "Device > Aircraft Distance - XY (ft)",
+    DeviceToAircraftDistance = "Device > Aircraft Distance - XY (ft)"
 }
 export declare type FlightLogRow = {
     [prop in FlightLogHeader]: any;
@@ -154,6 +154,7 @@ export declare type FlightLogMetaData = {
         discharges: number;
         cells: number;
         firmware: string;
+        serialNumber: string;
     };
     flightController: {
         serialNumber: string;

@@ -18,7 +18,7 @@
     "node_modules/@types",
   ],
   "exclude": [
-    "src/tests"
+    "src/__test__"
   ],
   "atom": {
      "rewriteTsconfig": false

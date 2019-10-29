@@ -2,7 +2,7 @@ import 'jest';
 import path from 'path';
 import fs from 'fs';
 import { promisify } from 'util';
-import { parseLog } from '../parser';
+import { fromUtcDateStr, parseLog } from '../parser';
 import { FlightLogHeader } from '../types';
 
 const readFileAsync = promisify(fs.readFile);
@@ -143,8 +143,8 @@ describe('test parse ios logs', () => {
         const { session } = iphoneLogMetaData;
         const { id, start, end, elapsed } = session;
 
-        const startDate = new Date('06/04/2018 22:29:00');
-        const endDate = new Date('06/04/2018 22:31:40');
+        const startDate = fromUtcDateStr('06/04/2018 22:29:00');
+        const endDate = fromUtcDateStr('06/04/2018 22:31:40');
 
         expect(id).toEqual('12345678');
         expect(start).toEqual(startDate);
@@ -246,8 +246,8 @@ describe('test parse ios logs', () => {
         const { session } = ipadLogMetaData;
         const { id, start, end, elapsed } = session;
 
-        const startDate = new Date('05/23/2018 20:50:18');
-        const endDate = new Date('05/23/2018 20:54:12');
+        const startDate = fromUtcDateStr('05/23/2018 20:50:18');
+        const endDate = fromUtcDateStr('05/23/2018 20:54:12');
 
         expect(id).toEqual('12345678');
         expect(start).toEqual(startDate);
@@ -316,6 +316,24 @@ describe('test parse ios logs', () => {
         const { serialNumber } = camera;
 
         expect(serialNumber).toEqual('N/A');
+      });
+    });
+  });
+
+  describe('parser utils', () => {
+    describe('fromUtcDateStr', () => {
+      it('should parse tz-aware timestamps correctly', () => {
+        const noonPacific = '05/23/2018 20:00:00.000Z';
+        expect(fromUtcDateStr(noonPacific).toISOString()).toBe('2018-05-23T20:00:00.000Z');
+        const noonUtc = '05/23/2018 12:00:00.000Z';
+        expect(fromUtcDateStr(noonUtc).toISOString()).toBe('2018-05-23T12:00:00.000Z');
+      });
+
+      it('should parse tz-naive timestamps as UTC', () => {
+        const noon = '05/23/2018 12:00:00';
+        expect(fromUtcDateStr(noon).toISOString()).toBe('2018-05-23T12:00:00.000Z');
+        const onePm = '2018-05-23 13:00:00';
+        expect(fromUtcDateStr(onePm).toISOString()).toBe('2018-05-23T13:00:00.000Z');
       });
     });
   });

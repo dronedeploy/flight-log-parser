@@ -110,6 +110,16 @@ function findMatch(search: string[], regex: RegExp, isNum?: boolean) {
   return match[1];
 }
 
+export function fromUtcDateStr(utcDateStr: string) {
+  if (!utcDateStr || !utcDateStr.trim().length || utcDateStr === 'N/A') {
+    return utcDateStr;
+  }
+  if (!/Z$/.test(utcDateStr)) {
+    utcDateStr = utcDateStr + '.000Z';
+  }
+  return new Date(utcDateStr);
+}
+
 function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData {
   const meta = [...headers, ...footers];
   let end = findMatch(meta, META_REGEX.sessionEnd);
@@ -134,8 +144,8 @@ function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData 
     appVersion: findMatch(meta, META_REGEX.appVersion),
     session: {
       id: findMatch(meta, META_REGEX.sessionId),
-      start: new Date(findMatch(meta, META_REGEX.sessionStart)),
-      end: new Date(end),
+      start: fromUtcDateStr(findMatch(meta, META_REGEX.sessionStart)),
+      end: fromUtcDateStr(end),
       elapsed: elapsed === 'N/A' ? 0 : parseFloat(elapsed),
     },
     device: {

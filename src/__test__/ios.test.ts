@@ -25,12 +25,9 @@ describe('test parse ios logs', () => {
         const { session } = sampleErrLogMetaData;
         const { id, start, end, elapsed } = session;
 
-        const startDate = Date.parse(start);
-        const endDate = Date.parse(end);
-
         expect(id).toEqual('N/A');
-        expect(Number.isNaN(startDate)).toBeTruthy();
-        expect(Number.isNaN(endDate)).toBeTruthy();
+        expect(start).toBeNull();
+        expect(end).toBeNull();
         expect(elapsed).toEqual(0);
       });
 

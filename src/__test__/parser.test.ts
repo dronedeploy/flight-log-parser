@@ -1,5 +1,5 @@
 import 'jest'
-import { fromUtcDateStr, LogEvent, parseLogStream } from '../parser';
+import {fromUtcDateStr, LogEvent, parseLog, parseLogStream} from '../parser';
 import { getIosLogs } from './testutil';
 import { Subject } from 'rxjs';
 
@@ -236,6 +236,80 @@ describe('parser', () => {
                     rowIndex: 34,
                 });
             })
+        });
+
+        describe('error log', () => {
+            let sampleErrLog: any;
+            let events: LogEvent[];
+            beforeAll(async () => {
+                const subj = new Subject<string>();
+                const parseLogStreamObs = parseLogStream(subj);
+                events = [];
+                parseLogStreamObs.subscribe((logEvent) => {
+                    events.push(_.cloneDeep(logEvent));
+                });
+                iosLogs.errorLog.split('\n').forEach((line: string) => subj.next(line));
+            });
+
+            describe('sampleErrLog detail test', () => {
+                it('parsed log should have correct falsy value when session info has no value', () => {
+                    const { id, start, end, elapsed } = events[events.length-1].meta.session;
+                    expect(id).toEqual('N/A');
+                    expect(start).toBeNull();
+                });
+
+                it('parsed log should have correct falsy value when aircraft info has no value', () => {
+                    const { model, name, firmware } = events[events.length-1].meta.aircraft;
+
+                    expect(model).toEqual('N/A');
+                    expect(name).toEqual('N/A');
+                    expect(firmware).toEqual('N/A');
+                });
+
+                it('parsed log should have correct falsy value when battery info has no value', () => {
+                    const {
+                        chargeVolume,
+                        remainingLifePercent,
+                        discharges,
+                        cells,
+                        firmware,
+                        serialNumber,
+                    } = events[events.length-1].meta.battery;
+
+                    expect(serialNumber).toEqual('N/A');
+                    expect(chargeVolume).toEqual(0);
+                    expect(remainingLifePercent).toEqual(0);
+                    expect(discharges).toEqual(0);
+                    expect(cells).toEqual(0);
+                    expect(firmware).toEqual('N/A');
+                });
+
+                it('parsed log should have correct falsy value when gimbal info has no value', () => {
+                    const { firmware } = events[events.length-1].meta.gimbal;
+
+                    expect(firmware).toEqual('N/A');
+                });
+
+                it('parsed log should have correct falsy value when flightController info has no value', () => {
+                    const { serialNumber, firmware } = events[events.length-1].meta.flightController;
+
+                    expect(serialNumber).toEqual('N/A');
+                    expect(firmware).toEqual('N/A');
+                });
+
+                it('parsed log should have correct falsy value when remoteController info has no value', () => {
+                    const { serialNumber, firmware } = events[events.length-1].meta.remoteController;
+
+                    expect(serialNumber).toEqual('N/A');
+                    expect(firmware).toEqual('N/A');
+                });
+
+                it('parsed log should have correct falsy value when camera info has no value', () => {
+                    const { serialNumber } = events[events.length-1].meta.camera;
+
+                    expect(serialNumber).toEqual('N/A');
+                });
+            });
         });
     });
 });

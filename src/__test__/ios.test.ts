@@ -1,26 +1,12 @@
 import 'jest';
-import path from 'path';
-import fs from 'fs';
-import { promisify } from 'util';
 import { fromUtcDateStr, parseLog } from '../parser';
 import { FlightLogHeader } from '../types';
-
-const readFileAsync = promisify(fs.readFile);
-
-// Maybe we can read all files from one folder?
-const ipadFilePath = path.join(__dirname, '/../../testlog/ipad-ios11-phantom4.log');
-const iphoneFilePath = path.join(__dirname, '/../../testlog/iphone-ios11-inspire.log');
-const iphoneFilePath2 = path.join(__dirname, '/../../testlog/iphone-ios-11-3-matrice.log');
-const errorLogFilePath = path.join(__dirname, '/../../testlog/errorLog.log');
+import { getIosLogs } from "./testutil";
 
 describe('test parse ios logs', () => {
   let iosLogs: any;
   beforeAll(async () => {
-    iosLogs = {
-      ipad: await readFileAsync(ipadFilePath, { encoding: 'utf8' }),
-      iphone: await readFileAsync(iphoneFilePath, { encoding: 'utf8' }),
-      errorLog: await readFileAsync(errorLogFilePath, { encoding: 'utf8' }),
-    };
+    iosLogs = await getIosLogs();
   });
 
   it('fsRead log should exist', async () => {
@@ -320,21 +306,4 @@ describe('test parse ios logs', () => {
     });
   });
 
-  describe('parser utils', () => {
-    describe('fromUtcDateStr', () => {
-      it('should parse tz-aware timestamps correctly', () => {
-        const noonPacific = '05/23/2018 20:00:00.000Z';
-        expect(fromUtcDateStr(noonPacific).toISOString()).toBe('2018-05-23T20:00:00.000Z');
-        const noonUtc = '05/23/2018 12:00:00.000Z';
-        expect(fromUtcDateStr(noonUtc).toISOString()).toBe('2018-05-23T12:00:00.000Z');
-      });
-
-      it('should parse tz-naive timestamps as UTC', () => {
-        const noon = '05/23/2018 12:00:00';
-        expect(fromUtcDateStr(noon).toISOString()).toBe('2018-05-23T12:00:00.000Z');
-        const onePm = '2018-05-23 13:00:00';
-        expect(fromUtcDateStr(onePm).toISOString()).toBe('2018-05-23T13:00:00.000Z');
-      });
-    });
-  });
 });

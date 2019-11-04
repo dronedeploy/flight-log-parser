@@ -105,3 +105,7 @@ export const BOOL_FIELDS = new Set([
   FlightLogHeader.AircraftCameraLensInstalled,
   FlightLogHeader.AircraftCameraLensMFAssistant,
 ]);
+
+export const DATE_FIELDS = new Set([
+    FlightLogHeader.DateTime,
+]);

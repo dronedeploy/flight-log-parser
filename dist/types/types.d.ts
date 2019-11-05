@@ -136,7 +136,7 @@ export declare type FlightLogMetaData = {
     session: {
         id: string;
         start: Date;
-        end: Date;
+        end: Date | null;
         elapsed: number;
     };
     device: {
@@ -154,6 +154,7 @@ export declare type FlightLogMetaData = {
         discharges: number;
         cells: number;
         firmware: string;
+        serialNumber: string;
     };
     flightController: {
         serialNumber: string;

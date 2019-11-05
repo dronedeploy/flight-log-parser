@@ -25,7 +25,7 @@ describe('test parsing troublesome logs', () => {
     it('should approximate a valid end date based on the last log row', () => {
       const { metaData } = parsedLog;
 
-      expect(metaData.session.end.toISOString()).toBe('2018-06-05T03:32:38.000Z');
+      expect((metaData.session.end as Date).toISOString()).toBe('2018-06-04T20:32:38.000Z');
     });
   });
 });

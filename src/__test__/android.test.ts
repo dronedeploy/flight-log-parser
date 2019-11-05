@@ -2,7 +2,7 @@ import 'jest';
 import path from 'path';
 import fs from 'fs';
 import { promisify } from 'util';
-import { parseLog } from '../parser';
+import {fromUtcDateStr, parseLog} from '../parser';
 import { FlightLogHeader } from '../types';
 
 const readFileAsync = promisify(fs.readFile);
@@ -56,8 +56,8 @@ describe('test parse android logs', () => {
         const { session } = pixel2LogMetaData;
         const { id, start, end, elapsed } = session;
 
-        const startDate = new Date('06/04/2018 20:32:30');
-        const endDate = new Date('06/04/2018 20:34:55');
+        const startDate = fromUtcDateStr('06/04/2018 20:32:30');
+        const endDate = fromUtcDateStr('06/04/2018 20:34:55');
 
         expect(id).toEqual('12345678');
         expect(start).toEqual(startDate);

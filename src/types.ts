@@ -138,7 +138,7 @@ export type FlightLogMetaData = {
   session: {
     id: string;
     start: Date;
-    end: Date;
+    end: Date | null;
     elapsed: number;
   };
   device: {

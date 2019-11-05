@@ -1,7 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const csv_parse_1 = require("csv-parse");
+const types_1 = require("./types");
 const field_types_1 = require("./field-types");
+const rxjs_1 = require("rxjs");
+const syncParse = require('csv-parse/lib/sync');
 const META_REGEX = {
     appVersion: /^#DroneDeploy\s+(.+)$/,
     sessionId: /^Session ID\s+(.+)$/,
@@ -16,9 +19,11 @@ const META_REGEX = {
     batteryRemainingLife: /^Remaining Life \(%\)\s+(.+)$/,
     batteryDischarges: /^Discharges\s+(.+)$/,
     batteryCells: /^Battery Cells Number\s+(.+)$/,
+    batterySerialNumber: /^Battery Serial Number\s+(.+)$/,
     batteryFirmware: /^Battery Firmware\s+(.+)$/,
     fcSerialNumber: /^Flight Controller Serial Number\s+(.+)$/,
     fcFirmware: /^Flight Controller Firmware\s+(.+)$/,
+    footerLines: /^#Flight Recorder Session End|^Date\/Time \(UTC\)|^Elapsed Time \(sec\)/,
     gimbalFirmware: /^Gimbal Firmware\s+(.+)$/,
     rcSerialNumber: /^Remote Control Serial Number\s+(.+)$/,
     rcFirmware: /^Remote Control Firmware\s+(.+)$/,
@@ -27,6 +32,78 @@ const META_REGEX = {
 };
 const LOG_HEADER_LINES = 27;
 const LOG_FOOTER_LINES = 3;
+function parseLogStream(logStream) {
+    const headerMetaLines = [];
+    let meta;
+    let rowHeaderLine;
+    const result = new rxjs_1.Subject();
+    let progress = { index: 0, completed: false };
+    let end;
+    logStream.subscribe((line) => {
+        if (!line.trim().length) {
+            return;
+        }
+        if (headerMetaLines.length < LOG_HEADER_LINES) {
+            headerMetaLines.push(line);
+            progress.index++;
+            return;
+        }
+        if (!meta) {
+            rowHeaderLine = line;
+            meta = parseMetaData(headerMetaLines, []);
+            // This is the beginning of the parsing.
+            result.next({
+                meta,
+                rowIndex: progress.index,
+            });
+            return;
+        }
+        let row;
+        if (META_REGEX.footerLines.test(line)) {
+            if (META_REGEX.sessionEnd.test(line)) {
+                end = fromUtcDateStr(findMatch([line], META_REGEX.sessionEnd));
+            }
+            else if (META_REGEX.elapsedTime.test(line)) {
+                const elapsed = findMatch([line], META_REGEX.elapsedTime);
+                // This is the end of the parsing. Because normal lines are parsed through a Promise, they will be delivered
+                // asynchronously. So we must ensure that this result is also delivered asynchronously.
+                setTimeout(() => {
+                    const parsedElapsed = elapsed === 'N/A' ? 0 : parseFloat(elapsed);
+                    if (parsedElapsed) {
+                        meta.session.elapsed = parsedElapsed;
+                    }
+                    if (end) {
+                        meta.session.end = end;
+                    }
+                    result.next({
+                        meta,
+                        rowIndex: progress.index++,
+                    });
+                    result.complete();
+                    progress.completed = true;
+                }, 0);
+            }
+        }
+        else {
+            parseBody([rowHeaderLine, line], true).then((rows) => {
+                row = rows[0];
+                meta.session.end = row[types_1.FlightLogHeader.DateTime];
+                meta.session.elapsed = row[types_1.FlightLogHeader.ElapsedTime];
+                result.next({
+                    meta,
+                    rowIndex: progress.index++,
+                    row,
+                });
+            });
+        }
+    }, (err) => { console.error('parsing error: ' + err); result.complete(); }, () => {
+        if (!progress.completed) {
+            result.complete();
+        }
+    });
+    return result;
+}
+exports.parseLogStream = parseLogStream;
 function parseLog(log) {
     const lines = log.split('\n');
     if (lines[lines.length - 1] === '') {
@@ -42,7 +119,7 @@ function parseLog(log) {
     }));
 }
 exports.parseLog = parseLog;
-function parseBody(lines) {
+function parseBody(lines, sync) {
     const text = lines.join('\n');
     const options = {
         delimiter: '\t',
@@ -50,13 +127,12 @@ function parseBody(lines) {
         relax_column_count: true,
     };
     return new Promise((resolve, reject) => {
-        csv_parse_1.default(text, options, (err, result) => {
+        const onResults = (err, result) => {
             if (err) {
                 return reject(err);
             }
             const [headers, ...rows] = result;
-            const logs = rows
-                .map((row) => {
+            const logs = rows.map((row) => {
                 const log = {};
                 for (let i = 0; i < headers.length; i++) {
                     const header = headers[i].trim();
@@ -70,16 +146,25 @@ function parseBody(lines) {
                     if (field_types_1.BOOL_FIELDS.has(header)) {
                         value = value !== '0';
                     }
+                    if (field_types_1.DATE_FIELDS.has(header)) {
+                        value = fromUtcDateStr(value);
+                    }
                     log[header] = value;
                 }
                 return log;
             });
             resolve(logs);
-        });
+        };
+        if (sync) {
+            const results = syncParse(text, options);
+            onResults(undefined, results);
+        }
+        else {
+            csv_parse_1.default(text, options, onResults);
+        }
     });
 }
-;
-function findMatch(search, regex) {
+function findMatch(search, regex, isNum) {
     let match;
     for (let str of search) {
         match = str.match(regex);
@@ -88,20 +173,51 @@ function findMatch(search, regex) {
         }
     }
     if (!match) {
-        return 'N/A';
+        return isNum ? '0' : 'N/A';
     }
     return match[1];
 }
-;
+function isValidDate(d) {
+    return d instanceof Date && !isNaN(d);
+}
+function fromUtcDateStr(utcDateStr) {
+    if (isValidDate(utcDateStr)) {
+        return utcDateStr;
+    }
+    const isBadDate = !utcDateStr || !utcDateStr.trim().length || utcDateStr === 'N/A';
+    if (isBadDate) {
+        return null;
+    }
+    if (!/Z$/.test(utcDateStr)) {
+        utcDateStr = utcDateStr + '.000Z';
+    }
+    return new Date(utcDateStr);
+}
+exports.fromUtcDateStr = fromUtcDateStr;
 function parseMetaData(headers, footers) {
     const meta = [...headers, ...footers];
+    let end = findMatch(meta, META_REGEX.sessionEnd);
+    let elapsed = findMatch(meta, META_REGEX.elapsedTime);
+    // if we weren't able to parse an end date or an elapsed time from our footer (which is really just the last three
+    // lines of the log file), it's likely that we have a truncated log file. if that's the case, we can still salvage
+    // some valid data by parsing the date and elapsed time from the very last log row in the file, which is what we're
+    // doing below. it's pretty brittle, but it's preferred to having an invalid end date and a NaN elapsed time.
+    if ((end === 'N/A' || elapsed === 'N/A') && footers.length > 0) {
+        const lastLine = footers[footers.length - 1];
+        const pieces = lastLine.split('\t');
+        // if we don't have at least two pieces, i don't know what is in `footer` so i'm just going to leave it alone
+        if (pieces.length >= 2) {
+            end = pieces[0];
+            elapsed = pieces[1];
+        }
+    }
     return {
         appVersion: findMatch(meta, META_REGEX.appVersion),
         session: {
             id: findMatch(meta, META_REGEX.sessionId),
-            start: new Date(findMatch(meta, META_REGEX.sessionStart)),
-            end: new Date(findMatch(meta, META_REGEX.sessionEnd)),
-            elapsed: parseFloat(findMatch(meta, META_REGEX.elapsedTime)),
+            start: fromUtcDateStr(findMatch(meta, META_REGEX.sessionStart)),
+            end: fromUtcDateStr(end),
+            elapsed: elapsed === 'N/A' ? 0 : parseFloat(elapsed),
         },
         device: {
             model: findMatch(meta, META_REGEX.deviceModel),
@@ -113,11 +229,12 @@ function parseMetaData(headers, footers) {
             firmware: findMatch(meta, META_REGEX.aircraftFirmware),
         },
         battery: {
-            chargeVolume: parseInt(findMatch(meta, META_REGEX.batteryChargeVolume), 10),
-            remainingLifePercent: parseInt(findMatch(meta, META_REGEX.batteryRemainingLife), 10),
-            discharges: parseInt(findMatch(meta, META_REGEX.batteryDischarges), 10),
-            cells: parseInt(findMatch(meta, META_REGEX.batteryCells), 10),
+            chargeVolume: parseInt(findMatch(meta, META_REGEX.batteryChargeVolume, true), 10),
+            remainingLifePercent: parseInt(findMatch(meta, META_REGEX.batteryRemainingLife, true), 10),
+            discharges: parseInt(findMatch(meta, META_REGEX.batteryDischarges, true), 10),
+            cells: parseInt(findMatch(meta, META_REGEX.batteryCells, true), 10),
             firmware: findMatch(meta, META_REGEX.batteryFirmware),
+            serialNumber: findMatch(meta, META_REGEX.batterySerialNumber),
         },
         flightController: {
             serialNumber: findMatch(meta, META_REGEX.fcSerialNumber),
@@ -135,5 +252,4 @@ function parseMetaData(headers, footers) {
         },
     };
 }
-;
 //# sourceMappingURL=parser.js.map

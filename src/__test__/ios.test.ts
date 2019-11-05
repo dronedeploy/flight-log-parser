@@ -1,26 +1,12 @@
 import 'jest';
-import path from 'path';
-import fs from 'fs';
-import { promisify } from 'util';
-import { parseLog } from '../parser';
+import { fromUtcDateStr, parseLog } from '../parser';
 import { FlightLogHeader } from '../types';
-
-const readFileAsync = promisify(fs.readFile);
-
-// Maybe we can read all files from one folder?
-const ipadFilePath = path.join(__dirname, '/../../testlog/ipad-ios11-phantom4.log');
-const iphoneFilePath = path.join(__dirname, '/../../testlog/iphone-ios11-inspire.log');
-const iphoneFilePath2 = path.join(__dirname, '/../../testlog/iphone-ios-11-3-matrice.log');
-const errorLogFilePath = path.join(__dirname, '/../../testlog/errorLog.log');
+import { getIosLogs } from "./testutil";
 
 describe('test parse ios logs', () => {
   let iosLogs: any;
   beforeAll(async () => {
-    iosLogs = {
-      ipad: await readFileAsync(ipadFilePath, { encoding: 'utf8' }),
-      iphone: await readFileAsync(iphoneFilePath, { encoding: 'utf8' }),
-      errorLog: await readFileAsync(errorLogFilePath, { encoding: 'utf8' }),
-    };
+    iosLogs = await getIosLogs();
   });
 
   it('fsRead log should exist', async () => {
@@ -39,12 +25,9 @@ describe('test parse ios logs', () => {
         const { session } = sampleErrLogMetaData;
         const { id, start, end, elapsed } = session;
 
-        const startDate = Date.parse(start);
-        const endDate = Date.parse(end);
-
         expect(id).toEqual('N/A');
-        expect(Number.isNaN(startDate)).toBeTruthy();
-        expect(Number.isNaN(endDate)).toBeTruthy();
+        expect(start).toBeNull();
+        expect(end).toBeNull();
         expect(elapsed).toEqual(0);
       });
 
@@ -143,8 +126,8 @@ describe('test parse ios logs', () => {
         const { session } = iphoneLogMetaData;
         const { id, start, end, elapsed } = session;
 
-        const startDate = new Date('06/04/2018 22:29:00');
-        const endDate = new Date('06/04/2018 22:31:40');
+        const startDate = fromUtcDateStr('06/04/2018 22:29:00');
+        const endDate = fromUtcDateStr('06/04/2018 22:31:40');
 
         expect(id).toEqual('12345678');
         expect(start).toEqual(startDate);
@@ -246,8 +229,8 @@ describe('test parse ios logs', () => {
         const { session } = ipadLogMetaData;
         const { id, start, end, elapsed } = session;
 
-        const startDate = new Date('05/23/2018 20:50:18');
-        const endDate = new Date('05/23/2018 20:54:12');
+        const startDate = fromUtcDateStr('05/23/2018 20:50:18');
+        const endDate = fromUtcDateStr('05/23/2018 20:54:12');
 
         expect(id).toEqual('12345678');
         expect(start).toEqual(startDate);
@@ -319,4 +302,5 @@ describe('test parse ios logs', () => {
       });
     });
   });
+
 });

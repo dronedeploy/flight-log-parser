@@ -298,4 +298,3 @@ License
 -------
 
 The code is available under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-

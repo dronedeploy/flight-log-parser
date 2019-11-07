@@ -1,10 +1,27 @@
 import { FlightLogRow, FlightLogMetaData, FlightLog } from './types';
-import { Observable } from "rxjs";
 export interface LogEvent {
     meta: FlightLogMetaData;
     rowIndex?: Number;
     row?: FlightLogRow;
 }
-export declare function parseLogStream(logStream: Observable<string>): Observable<LogEvent>;
+export declare type Subscriber<T> = (value: T) => void;
+export declare type ErrorSubscriber = (value: any) => void;
+export declare type CompletionSubscriber = () => void;
+export interface QuasiObservable<T> {
+    subscribe(sub: Subscriber<T>, errSub?: ErrorSubscriber, completionSub?: CompletionSubscriber): void;
+    toPromise(): Promise<T>;
+}
+export declare class QuasiSubject<T> implements QuasiObservable<T> {
+    private subscribers;
+    private errorSubscribers;
+    private completionSubscribers;
+    private isFinished;
+    next(value: T): void;
+    complete(): void;
+    error(error: any): void;
+    subscribe(sub: Subscriber<T>, errSub?: ErrorSubscriber, completionSub?: CompletionSubscriber): void;
+    toPromise(): Promise<T>;
+}
+export declare function parseLogStream(logStream: QuasiSubject<string>): QuasiObservable<LogEvent>;
 export declare function parseLog(log: String): Promise<FlightLog>;
 export declare function fromUtcDateStr(utcDateStr: string): Date | null;

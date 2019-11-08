@@ -1,6 +1,7 @@
 import 'jest'
-import { fromUtcDateStr, LogEvent, parseLogStream, QuasiSubject } from '../parser';
+import { fromUtcDateStr, parseLogStream, QuasiSubject } from '../parser';
 import { getIosLogs } from './testutil';
+import { FlightLogEvent } from "../types";
 
 
 const _ = require('lodash');
@@ -32,7 +33,7 @@ describe('parser', () => {
     describe('parseLogStream', () => {
         it('should parse the ios stream correctly', () => {
             const subj = new QuasiSubject<string>();
-            const events: LogEvent[] = [];
+            const events: FlightLogEvent[] = [];
             const parseLogStreamObs = parseLogStream(subj);
             parseLogStreamObs.subscribe((logEvent) => {
                 events.push(_.cloneDeep(logEvent));
@@ -239,7 +240,7 @@ describe('parser', () => {
 
         describe('error log', () => {
             let sampleErrLog: any;
-            let events: LogEvent[];
+            let events: FlightLogEvent[];
             beforeAll(async () => {
                 const subj = new QuasiSubject<string>();
                 const parseLogStreamObs = parseLogStream(subj);

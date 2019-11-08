@@ -1,9 +1,4 @@
-import { FlightLogRow, FlightLogMetaData, FlightLog } from './types';
-export interface LogEvent {
-    meta: FlightLogMetaData;
-    rowIndex?: Number;
-    row?: FlightLogRow;
-}
+import { FlightLog, FlightLogEvent } from './types';
 export declare type Subscriber<T> = (value: T) => void;
 export declare type ErrorSubscriber = (value: any) => void;
 export declare type CompletionSubscriber = () => void;
@@ -22,6 +17,6 @@ export declare class QuasiSubject<T> implements QuasiObservable<T> {
     subscribe(sub: Subscriber<T>, errSub?: ErrorSubscriber, completionSub?: CompletionSubscriber): void;
     toPromise(): Promise<T>;
 }
-export declare function parseLogStream(logStream: QuasiSubject<string>): QuasiObservable<LogEvent>;
+export declare function parseLogStream(logStream: QuasiSubject<string>): QuasiObservable<FlightLogEvent>;
 export declare function parseLog(log: String): Promise<FlightLog>;
 export declare function fromUtcDateStr(utcDateStr: string): Date | null;

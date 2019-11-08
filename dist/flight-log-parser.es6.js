@@ -1376,6 +1376,125 @@ const META_REGEX = {
 };
 const LOG_HEADER_LINES = 27;
 const LOG_FOOTER_LINES = 3;
+class QuasiSubject {
+    constructor() {
+        this.subscribers = [];
+        this.errorSubscribers = [];
+        this.completionSubscribers = [];
+        this.isFinished = false;
+    }
+    next(value) {
+        if (this.isFinished) {
+            return;
+        }
+        this.subscribers.forEach((s) => s(value));
+    }
+    complete() {
+        if (this.isFinished) {
+            return;
+        }
+        this.isFinished = true;
+        this.completionSubscribers.forEach((sub) => sub());
+    }
+    error(error) {
+        if (this.isFinished) {
+            return;
+        }
+        this.errorSubscribers.forEach((errSub) => errSub(error));
+        this.complete();
+    }
+    subscribe(sub, errSub, completionSub) {
+        this.subscribers.push(sub);
+        if (errSub) {
+            this.errorSubscribers.push(errSub);
+        }
+        if (completionSub) {
+            this.completionSubscribers.push(completionSub);
+        }
+    }
+    toPromise() {
+        const source = this;
+        return new Promise(function (resolve, reject) {
+            let value;
+            source.subscribe(function (v) {
+                value = v;
+            }, reject, function () {
+                resolve(value);
+            });
+        });
+    }
+}
+function parseLogStream(logStream) {
+    const headerMetaLines = [];
+    let meta;
+    let rowHeaderLine;
+    const result = new QuasiSubject();
+    let progress = { index: 0, completed: false };
+    let end;
+    logStream.subscribe((line) => {
+        if (!line.trim().length) {
+            return;
+        }
+        if (headerMetaLines.length < LOG_HEADER_LINES) {
+            headerMetaLines.push(line);
+            progress.index++;
+            return;
+        }
+        if (!meta) {
+            rowHeaderLine = line;
+            meta = parseMetaData(headerMetaLines, []);
+            // This is the beginning of the parsing.
+            result.next({
+                meta,
+                rowIndex: progress.index,
+            });
+            return;
+        }
+        let row;
+        if (META_REGEX.footerLines.test(line)) {
+            if (META_REGEX.sessionEnd.test(line)) {
+                end = fromUtcDateStr(findMatch([line], META_REGEX.sessionEnd));
+            }
+            else if (META_REGEX.elapsedTime.test(line)) {
+                const elapsed = findMatch([line], META_REGEX.elapsedTime);
+                // This is the end of the parsing. Because normal lines are parsed through a Promise, they will be delivered
+                // asynchronously. So we must ensure that this result is also delivered asynchronously.
+                setTimeout(() => {
+                    const parsedElapsed = elapsed === 'N/A' ? 0 : parseFloat(elapsed);
+                    if (parsedElapsed) {
+                        meta.session.elapsed = parsedElapsed;
+                    }
+                    if (end) {
+                        meta.session.end = end;
+                    }
+                    result.next({
+                        meta,
+                        rowIndex: progress.index++,
+                    });
+                    result.complete();
+                    progress.completed = true;
+                }, 0);
+            }
+        }
+        else {
+            parseBody([rowHeaderLine, line], true).then((rows) => {
+                row = rows[0];
+                meta.session.end = row[FlightLogHeader.DateTime];
+                meta.session.elapsed = row[FlightLogHeader.ElapsedTime];
+                result.next({
+                    meta,
+                    rowIndex: progress.index++,
+                    row,
+                });
+            });
+        }
+    }, (err) => { console.error('parsing error: ' + err); result.complete(); }, () => {
+        if (!progress.completed) {
+            result.complete();
+        }
+    });
+    return result;
+}
 function parseLog(log) {
     const lines = log.split('\n');
     if (lines[lines.length - 1] === '') {
@@ -1523,5 +1642,5 @@ function parseMetaData(headers, footers) {
     };
 }
 
-export { FlightLogHeader, FLIGHT_MODE_MAPPING, parseLog };
+export { FlightLogHeader, FLIGHT_MODE_MAPPING, parseLog, parseLogStream, QuasiSubject, fromUtcDateStr };
 //# sourceMappingURL=flight-log-parser.es6.js.map

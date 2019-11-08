@@ -1,6 +1,6 @@
 {
   "name": "@dronedeploy/flight-log-parser",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Parser for DroneDeploy flight logs",
   "main": "dist/flight-log-parser.js",
   "module": "dist/flight-log-parser.es6.js",
@@ -27,8 +27,7 @@
   },
   "dependencies": {
     "csv-parse": "^2.4.0",
-    "lodash": "^4.17.15",
-    "rxjs": "^6.5.3"
+    "lodash": "^4.17.15"
   },
   "devDependencies": {
     "@types/csv-parse": "^1.1.11",

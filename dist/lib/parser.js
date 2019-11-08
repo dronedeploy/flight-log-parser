@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const csv_parse_1 = require("csv-parse");
 const types_1 = require("./types");
 const field_types_1 = require("./field-types");
-const rxjs_1 = require("rxjs");
 const syncParse = require('csv-parse/lib/sync');
 const META_REGEX = {
     appVersion: /^#DroneDeploy\s+(.+)$/,
@@ -32,11 +31,60 @@ const META_REGEX = {
 };
 const LOG_HEADER_LINES = 27;
 const LOG_FOOTER_LINES = 3;
+class QuasiSubject {
+    constructor() {
+        this.subscribers = [];
+        this.errorSubscribers = [];
+        this.completionSubscribers = [];
+        this.isFinished = false;
+    }
+    next(value) {
+        if (this.isFinished) {
+            return;
+        }
+        this.subscribers.forEach((s) => s(value));
+    }
+    complete() {
+        if (this.isFinished) {
+            return;
+        }
+        this.isFinished = true;
+        this.completionSubscribers.forEach((sub) => sub());
+    }
+    error(error) {
+        if (this.isFinished) {
+            return;
+        }
+        this.errorSubscribers.forEach((errSub) => errSub(error));
+        this.complete();
+    }
+    subscribe(sub, errSub, completionSub) {
+        this.subscribers.push(sub);
+        if (errSub) {
+            this.errorSubscribers.push(errSub);
+        }
+        if (completionSub) {
+            this.completionSubscribers.push(completionSub);
+        }
+    }
+    toPromise() {
+        const source = this;
+        return new Promise(function (resolve, reject) {
+            let value;
+            source.subscribe(function (v) {
+                value = v;
+            }, reject, function () {
+                resolve(value);
+            });
+        });
+    }
+}
+exports.QuasiSubject = QuasiSubject;
 function parseLogStream(logStream) {
     const headerMetaLines = [];
     let meta;
     let rowHeaderLine;
-    const result = new rxjs_1.Subject();
+    const result = new QuasiSubject();
     let progress = { index: 0, completed: false };
     let end;
     logStream.subscribe((line) => {

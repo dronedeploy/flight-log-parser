@@ -1,10 +1,9 @@
 import parse from 'csv-parse';
 
 import { FlightLogRow, FlightLogHeader, FlightLogMetaData, FlightLog } from './types';
-import {INT_FIELDS, BOOL_FIELDS, FLOAT_FIELDS, DATE_FIELDS} from './field-types';
-import { Observable, Subject } from "rxjs";
+import { INT_FIELDS, BOOL_FIELDS, FLOAT_FIELDS, DATE_FIELDS } from './field-types';
 
-const syncParse = require('csv-parse/lib/sync')
+const syncParse = require('csv-parse/lib/sync');
 
 
 const META_REGEX = {
@@ -42,12 +41,73 @@ export interface LogEvent {
   row?: FlightLogRow;
 }
 
+export type Subscriber<T> = (value: T) => void;
+export type ErrorSubscriber = (value: any) => void;
+export type CompletionSubscriber = () => void;
 
-export function parseLogStream(logStream: Observable<string>): Observable<LogEvent> {
+export interface QuasiObservable<T> {
+    subscribe(sub: Subscriber<T>, errSub?: ErrorSubscriber, completionSub?: CompletionSubscriber): void;
+    toPromise(): Promise<T>;
+}
+
+export class QuasiSubject<T> implements QuasiObservable<T> {
+    private subscribers: Subscriber<T>[] = [];
+    private errorSubscribers: ErrorSubscriber[] = [];
+    private completionSubscribers: CompletionSubscriber[] = [];
+    private isFinished = false;
+
+    next(value: T) {
+        if (this.isFinished) {
+            return;
+        }
+        this.subscribers.forEach((s) => s(value));
+    }
+
+    complete() {
+        if (this.isFinished) {
+            return;
+        }
+        this.isFinished = true;
+        this.completionSubscribers.forEach((sub) => sub());
+    }
+
+    error(error: any) {
+        if (this.isFinished) {
+            return;
+        }
+        this.errorSubscribers.forEach((errSub) => errSub(error));
+        this.complete();
+    }
+
+    subscribe(sub: Subscriber<T>, errSub?: ErrorSubscriber, completionSub?: CompletionSubscriber) {
+        this.subscribers.push(sub);
+        if (errSub) {
+            this.errorSubscribers.push(errSub);
+        }
+        if (completionSub) {
+            this.completionSubscribers.push(completionSub);
+        }
+    }
+
+    toPromise(): Promise<T> {
+        const source = this;
+        return new Promise<T>(function (resolve, reject) {
+            let value: T;
+            source.subscribe(function (v) {
+                value = v;
+            }, reject, function () {
+                resolve(value);
+            });
+        });
+    }
+}
+
+
+export function parseLogStream(logStream: QuasiSubject<string>): QuasiObservable<LogEvent> {
   const headerMetaLines: string[] = [];
   let meta: FlightLogMetaData;
   let rowHeaderLine: string;
-  const result = new Subject<LogEvent>();
+  const result = new QuasiSubject<LogEvent>();
   let progress = { index: 0, completed: false };
   let end: any;
   logStream.subscribe((line: string) => {

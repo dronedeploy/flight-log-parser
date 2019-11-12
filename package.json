@@ -1,6 +1,6 @@
 {
   "name": "@dronedeploy/flight-log-parser",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "Parser for DroneDeploy flight logs",
   "main": "dist/flight-log-parser.js",
   "module": "dist/flight-log-parser.es6.js",

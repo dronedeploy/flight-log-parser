@@ -175,6 +175,11 @@ export declare type FlightLog = {
     metaData: FlightLogMetaData;
     rows: FlightLogRow[];
 };
+export declare type FlightLogEvent = {
+    meta: FlightLogMetaData;
+    rowIndex?: number;
+    row?: FlightLogRow;
+};
 export declare const FLIGHT_MODE_MAPPING: {
     0: string;
     1: string;

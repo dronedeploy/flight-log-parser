@@ -1,6 +1,6 @@
 import parse from 'csv-parse';
 
-import { FlightLogRow, FlightLogHeader, FlightLogMetaData, FlightLog } from './types';
+import { FlightLogRow, FlightLogHeader, FlightLogMetaData, FlightLog, FlightLogEvent } from './types';
 import { INT_FIELDS, BOOL_FIELDS, FLOAT_FIELDS, DATE_FIELDS } from './field-types';
 
 const syncParse = require('csv-parse/lib/sync');
@@ -34,12 +34,6 @@ const META_REGEX = {
 
 const LOG_HEADER_LINES = 27;
 const LOG_FOOTER_LINES = 3;
-
-export interface LogEvent {
-  meta: FlightLogMetaData;
-  rowIndex?: Number;
-  row?: FlightLogRow;
-}
 
 export type Subscriber<T> = (value: T) => void;
 export type ErrorSubscriber = (value: any) => void;
@@ -103,11 +97,11 @@ export class QuasiSubject<T> implements QuasiObservable<T> {
 }
 
 
-export function parseLogStream(logStream: QuasiSubject<string>): QuasiObservable<LogEvent> {
+export function parseLogStream(logStream: QuasiSubject<string>): QuasiObservable<FlightLogEvent> {
   const headerMetaLines: string[] = [];
   let meta: FlightLogMetaData;
   let rowHeaderLine: string;
-  const result = new QuasiSubject<LogEvent>();
+  const result = new QuasiSubject<FlightLogEvent>();
   let progress = { index: 0, completed: false };
   let end: any;
   logStream.subscribe((line: string) => {

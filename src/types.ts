@@ -179,6 +179,12 @@ export type FlightLog = {
   rows: FlightLogRow[];
 };
 
+export type FlightLogEvent = {
+  meta: FlightLogMetaData;
+  rowIndex?: number;
+  row?: FlightLogRow;
+};
+
 // based off of types in ios/android SDK FlightMode enums
 export const FLIGHT_MODE_MAPPING = {
   0: 'Manual',

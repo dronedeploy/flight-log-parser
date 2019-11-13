@@ -1,1 +1,1 @@
-{"version":3,"file":"flight-log-parser.js","sourceRoot":"","sources":["../../src/flight-log-parser.ts"],"names":[],"mappings":";;AAAA,iCAMiB;AAJf,kCAAA,eAAe,CAAA;AAGf,sCAAA,mBAAmB,CAAA;AAErB,mCAAoC;AAA3B,4BAAA,QAAQ,CAAA"}
+{"version":3,"file":"flight-log-parser.js","sourceRoot":"","sources":["../../src/flight-log-parser.ts"],"names":[],"mappings":";;AAAA,iCAOiB;AAJf,kCAAA,eAAe,CAAA;AAGf,sCAAA,mBAAmB,CAAA;AAErB,mCAAmG;AAA1F,4BAAA,QAAQ,CAAA;AAAE,kCAAA,cAAc,CAAA;AAAE,gCAAA,YAAY,CAAA;AAAmB,kCAAA,cAAc,CAAA"}

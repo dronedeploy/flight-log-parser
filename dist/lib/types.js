@@ -133,6 +133,8 @@ var FlightLogHeader;
     FlightLogHeader["CompassSensorValue"] = "Compass Sensor Value";
     FlightLogHeader["CompassState"] = "Compass State";
     FlightLogHeader["CompassStateLastUpdated"] = "Compass State Last Updated (ms)";
+    FlightLogHeader["CompassCalibrationState"] = "Compass Calibration State";
+    FlightLogHeader["CompassCalibrationLastUpdated"] = "Compass Calibration Last Updated (ms)";
     FlightLogHeader["DeviceToAircraftDistance"] = "Device > Aircraft Distance - XY (ft)";
 })(FlightLogHeader = exports.FlightLogHeader || (exports.FlightLogHeader = {}));
 // based off of types in ios/android SDK FlightMode enums

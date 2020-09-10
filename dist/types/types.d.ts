@@ -130,6 +130,8 @@ export declare enum FlightLogHeader {
     CompassSensorValue = "Compass Sensor Value",
     CompassState = "Compass State",
     CompassStateLastUpdated = "Compass State Last Updated (ms)",
+    CompassCalibrationState = "Compass Calibration State",
+    CompassCalibrationLastUpdated = "Compass Calibration Last Updated (ms)",
     DeviceToAircraftDistance = "Device > Aircraft Distance - XY (ft)",
 }
 export declare type FlightLogRow = {

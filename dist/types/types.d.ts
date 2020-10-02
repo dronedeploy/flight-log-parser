@@ -126,6 +126,12 @@ export declare enum FlightLogHeader {
     AircraftCameraLensAFAssistant = "Aircraft Camera Lens AF Assistant",
     AircraftCameraLensAssistantWorking = "Aircraft Camera Lens Assistant Working",
     AircraftCameraLensStateLastUpdated = "Aircraft Camera Lens State Last Updated (ms)",
+    CompassIndex = "Compass Index",
+    CompassSensorValue = "Compass Sensor Value",
+    CompassState = "Compass State",
+    CompassStateLastUpdated = "Compass State Last Updated (ms)",
+    CompassCalibrationState = "Compass Calibration State",
+    CompassCalibrationLastUpdated = "Compass Calibration Last Updated (ms)",
     DeviceToAircraftDistance = "Device > Aircraft Distance - XY (ft)",
 }
 export declare type FlightLogRow = {

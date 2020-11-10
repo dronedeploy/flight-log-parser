@@ -30,9 +30,12 @@ const META_REGEX = {
   rcFirmware: /^Remote Control Firmware\s+(.+)$/,
   cameraSerialNumber: /^Camera Serial Number\s+(.+)$/,
   elapsedTime: /^Elapsed Time \(sec\)\s+(.+)$/,
+  userId: /^User ID\s+(.+)$/,
+  organizationId: /^Organization ID\s+(.+)$/,
+  platform: /^Platform\s+(.+)$/,
 };
 
-const LOG_HEADER_LINES = 27;
+const LOG_HEADER_LINES = 30;
 const LOG_FOOTER_LINES = 3;
 
 export type Subscriber<T> = (value: T) => void;
@@ -158,6 +161,7 @@ export function parseLogStream(logStream: QuasiSubject<string>): QuasiObservable
           meta,
           rowIndex: progress.index++,
           row,
+          info: (!row.Info) ? undefined : JSON.parse(row.Info),
         })
       });
     }
@@ -308,6 +312,7 @@ function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData 
     device: {
       model: findMatch(meta, META_REGEX.deviceModel),
       os: findMatch(meta, META_REGEX.deviceOS).replace(/\t/g, ' '),
+      platform: findMatch(meta, META_REGEX.platform),
     },
     aircraft: {
       model: findMatch(meta, META_REGEX.aircraftModel),
@@ -335,6 +340,10 @@ function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData 
     },
     camera: {
       serialNumber: findMatch(meta, META_REGEX.cameraSerialNumber),
+    },
+    user: {
+      userId: findMatch(meta, META_REGEX.userId),
+      organizationId: findMatch(meta, META_REGEX.organizationId),
     },
   };
 }

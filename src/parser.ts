@@ -348,7 +348,12 @@ function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData 
   };
 }
 
-function parseJsonInfo(info: string): string|undefined {
+/**
+ * Parse out the given string and return an object if the string is JSON, return undefined otherwise.
+ *
+ * @param info
+ */
+function parseJsonInfo(info: string): object|undefined {
   if (!info) {
     return undefined;
   }
@@ -356,6 +361,6 @@ function parseJsonInfo(info: string): string|undefined {
     return JSON.parse(info);
   }
   catch (e) {
-    return info;
+    return undefined;
   }
 }

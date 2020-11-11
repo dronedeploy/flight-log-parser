@@ -66,6 +66,7 @@ FlightLogMetaData = {
   device: {
     model: string;
     os: string;
+    platform: string;
   };
   aircraft: {
     model: string;
@@ -93,6 +94,10 @@ FlightLogMetaData = {
   };
   camera: {
     serialNumber: string;
+  };
+  user: {
+    userId: string;
+    orgasnizationId: string;
   };
 };
 ```
@@ -136,7 +141,7 @@ enum FlightLogHeader {
            start: 2018-06-05T05:29:00.000Z,
            end: 2018-06-05T05:31:40.000Z,
            elapsed: 160.408 },
-        device: { model: 'iPhone', os: 'iOS 11.4' },
+        device: { model: 'iPhone', os: 'iOS 11.4', platform: 'iOS' },
         aircraft:
          { model: 'Inspire 1 Pro',
            name: 'inspire pro',
@@ -151,12 +156,13 @@ enum FlightLogHeader {
         flightController: { serialNumber: 'N/A', firmware: '02.04.20.50' },
         gimbal: { firmware: '01.31.01.67' },
         remoteController: { serialNumber: '12345678', firmware: '1.2.0.17' },
-        camera: { serialNumber: 'N/A' }
+        camera: { serialNumber: 'N/A' },
+        user: { userId: '5fac2b9256338b4d7fd43852', organizationId: '5fac2c0dd27ea76caff42e9f' }
     },
     rows:  [
         { 'Date/Time (GMT)': '06/04/2018 20:32:36',
         'Elapsed Time (sec)': 6.675,
-        Info: 'Mission did take off',
+        Info: "{'message': 'Mission did take off'}",
         'Aircraft Battery Power (%)': 95,
         'Aircraft Battery Charge (mAh)': 3944,
         'Aircraft Battery Current (mA)': -13688,

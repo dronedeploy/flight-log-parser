@@ -28,8 +28,11 @@ const META_REGEX = {
     rcFirmware: /^Remote Control Firmware\s+(.+)$/,
     cameraSerialNumber: /^Camera Serial Number\s+(.+)$/,
     elapsedTime: /^Elapsed Time \(sec\)\s+(.+)$/,
+    userId: /^User ID\s+(.+)$/,
+    organizationId: /^Organization ID\s+(.+)$/,
+    platform: /^Platform\s+(.+)$/,
 };
-const LOG_HEADER_LINES = 27;
+const LOG_HEADER_LINES = 30;
 const LOG_FOOTER_LINES = 3;
 class QuasiSubject {
     constructor() {
@@ -141,6 +144,7 @@ function parseLogStream(logStream) {
                     meta,
                     rowIndex: progress.index++,
                     row,
+                    info: (!row.Info) ? undefined : JSON.parse(row.Info),
                 });
             });
         }
@@ -270,6 +274,7 @@ function parseMetaData(headers, footers) {
         device: {
             model: findMatch(meta, META_REGEX.deviceModel),
             os: findMatch(meta, META_REGEX.deviceOS).replace(/\t/g, ' '),
+            platform: findMatch(meta, META_REGEX.platform),
         },
         aircraft: {
             model: findMatch(meta, META_REGEX.aircraftModel),
@@ -297,6 +302,10 @@ function parseMetaData(headers, footers) {
         },
         camera: {
             serialNumber: findMatch(meta, META_REGEX.cameraSerialNumber),
+        },
+        user: {
+            userId: findMatch(meta, META_REGEX.userId),
+            organizationId: findMatch(meta, META_REGEX.organizationId),
         },
     };
 }

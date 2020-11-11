@@ -148,6 +148,7 @@ export declare type FlightLogMetaData = {
     device: {
         model: string;
         os: string;
+        platform: string;
     };
     aircraft: {
         model: string;
@@ -176,6 +177,10 @@ export declare type FlightLogMetaData = {
     camera: {
         serialNumber: string;
     };
+    user: {
+        userId: string;
+        organizationId: string;
+    };
 };
 export declare type FlightLog = {
     metaData: FlightLogMetaData;
@@ -185,6 +190,7 @@ export declare type FlightLogEvent = {
     meta: FlightLogMetaData;
     rowIndex?: number;
     row?: FlightLogRow;
+    info?: any;
 };
 export declare const FLIGHT_MODE_MAPPING: {
     0: string;

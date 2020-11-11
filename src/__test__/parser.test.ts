@@ -61,6 +61,7 @@ describe('parser', () => {
                 device: {
                     model: 'iPad',
                     os: 'iOS 11.2.6',
+                    platform: 'iOS',
                 },
                 flightController: {
                     firmware: '03.02.44.07',
@@ -79,6 +80,10 @@ describe('parser', () => {
                     id: '12345678',
                     start: new Date('2018-05-23T20:50:18.000Z'),
                 },
+                user: {
+                    userId: '5fac2b9256338b4d7fd43852',
+                    organizationId: '5fac2c0dd27ea76caff42e9f',
+                },
             };
 
             return parseLogStreamObs.toPromise().then(() => {
@@ -90,9 +95,10 @@ describe('parser', () => {
                             end: null,
                         }
                     }),
-                    rowIndex: 27,
+                    rowIndex: 30,
                 });
                 expect(events[events.length - 2]).toEqual({
+                    info: undefined,
                     meta: _.merge(_.cloneDeep(meta), {
                         session: {
                             elapsed: 233.121,
@@ -229,11 +235,11 @@ describe('parser', () => {
                         'RC State Last Updated (ms)': '26',
                         'RC State Value': 2,
                     },
-                    rowIndex: 33,
+                    rowIndex: 36,
                 });
                 expect(events[events.length - 1]).toEqual({
                     meta,
-                    rowIndex: 34,
+                    rowIndex: 37,
                 });
             })
         });

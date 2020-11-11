@@ -1,8 +1,11 @@
 #DroneDeploy	2.75.0
 #Flight Recorder
+User ID 5fac2b9256338b4d7fd43852
+Organization ID 5fac2c0dd27ea76caff42e9f
 Session ID	12345678
 Session Start	06/04/2018 20:32:30
 #Device
+Platform    iOS
 Device Model	Pixel 2
 Device Manufacturer	Google
 Device Operating System	Android	8.1.0

@@ -161,7 +161,7 @@ export function parseLogStream(logStream: QuasiSubject<string>): QuasiObservable
           meta,
           rowIndex: progress.index++,
           row,
-          info: (!row.Info) ? undefined : JSON.parse(row.Info),
+          info: parseJsonInfo(row.Info),
         })
       });
     }
@@ -346,4 +346,16 @@ function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData 
       organizationId: findMatch(meta, META_REGEX.organizationId),
     },
   };
+}
+
+function parseJsonInfo(info: string): string|undefined {
+  if (!info) {
+    return undefined;
+  }
+  try {
+    return JSON.parse(info);
+  }
+  catch (e) {
+    return info;
+  }
 }

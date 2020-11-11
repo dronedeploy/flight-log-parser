@@ -99,7 +99,6 @@ export class QuasiSubject<T> implements QuasiObservable<T> {
     }
 }
 
-
 export function parseLogStream(logStream: QuasiSubject<string>): QuasiObservable<FlightLogEvent> {
   const headerMetaLines: string[] = [];
   let meta: FlightLogMetaData;
@@ -175,21 +174,25 @@ export function parseLogStream(logStream: QuasiSubject<string>): QuasiObservable
 }
 
 export function parseLog(log: String): Promise<FlightLog> {
-  const lines = log.split('\n');
+  const lines = log.split('\n').filter(l => l);
+  const subject = new QuasiSubject<string>();
+  lines.forEach(l => subject.next(l));
 
-  if (lines[lines.length - 1] === '') {
-    lines.pop();
+  const flightLog: FlightLog = {
+    metaData: undefined,
+    rows: []
   }
+  const parse = parseLogStream(subject);
+  parse.subscribe((event) => {
+    flightLog.metaData = (event.meta) ? event.meta : flightLog.metaData;
+    if (event.row) {
+      flightLog.rows.push(event.row);
+    }
+  });
 
-  const header = lines.slice(0, LOG_HEADER_LINES);
-  const footer = lines.slice(-LOG_FOOTER_LINES);
-  const body = lines.slice(LOG_HEADER_LINES, -LOG_FOOTER_LINES);
-  const metaData = parseMetaData(header, footer);
-
-  return parseBody(body).then((rows) => ({
-    metaData,
-    rows,
-  }));
+  return new Promise<FlightLog>(resolve => {
+    parse.toPromise().then(() => resolve(flightLog));
+  });
 }
 
 function parseBody(lines: string[], sync?: boolean): Promise<FlightLogRow[]> {

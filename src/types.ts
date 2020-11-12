@@ -186,7 +186,7 @@ export type FlightLogMetaData = {
 };
 
 export type FlightLog = {
-  metaData?: FlightLogMetaData;
+  metaData: FlightLogMetaData;
   rows: FlightLogRow[];
 };
 

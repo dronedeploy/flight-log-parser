@@ -179,7 +179,7 @@ export function parseLog(log: String): Promise<FlightLog> {
   const parse = parseLogStream(subject);
 
   const flightLog: FlightLog = {
-    metaData: undefined,
+    metaData: {} as FlightLogMetaData,
     rows: []
   }
   parse.subscribe((event) => {
@@ -191,7 +191,7 @@ export function parseLog(log: String): Promise<FlightLog> {
   lines.forEach(l => subject.next(l));
 
   return new Promise<FlightLog>(resolve => {
-    parse.toPromise().then(() => resolve(flightLog));
+    parse.toPromise().then(() => resolve(flightLog)).catch(() => resolve(flightLog));
   });
 }
 

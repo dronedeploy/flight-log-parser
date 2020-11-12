@@ -101,32 +101,35 @@ export class QuasiSubject<T> implements QuasiObservable<T> {
 
 export function parseLogStream(logStream: QuasiSubject<string>): QuasiObservable<FlightLogEvent> {
   const headerMetaLines: string[] = [];
-  let meta: FlightLogMetaData;
+  let meta = {} as FlightLogMetaData;
   let rowHeaderLine: string;
-  const result = new QuasiSubject<FlightLogEvent>();
-  let progress = { index: 0, completed: false };
+  let row: FlightLogRow;
+
+  const progress = { index: 0, completed: false };
   let end: any;
+  const result = new QuasiSubject<FlightLogEvent>();
+
   logStream.subscribe((line: string) => {
-    if (!line.trim().length) {
+    line = line.trim();
+    if (!line.length) {
       return;
     }
 
-    if (headerMetaLines.length < LOG_HEADER_LINES) {
-      headerMetaLines.push(line);
-      progress.index++;
+    if (!rowHeaderLine) {
+      if (line.startsWith(FlightLogHeader.DateTime.split(' ')[0])) {  // Strip off timezone.
+        rowHeaderLine = line;
+        meta = parseMetaData(headerMetaLines, []);
+        result.next({
+          meta,
+          rowIndex: progress.index
+        });
+      } else {
+        headerMetaLines.push(line);
+        progress.index++;
+      }
       return;
     }
-    if (!meta) {
-      rowHeaderLine = line;
-      meta = parseMetaData(headerMetaLines, []);
-      // This is the beginning of the parsing.
-      result.next({
-        meta,
-        rowIndex: progress.index,
-      });
-      return;
-    }
-    let row: FlightLogRow;
+
     if (META_REGEX.footerLines.test(line)) {
       if (META_REGEX.sessionEnd.test(line)) {
         end = fromUtcDateStr(findMatch([line], META_REGEX.sessionEnd));
@@ -170,11 +173,12 @@ export function parseLogStream(logStream: QuasiSubject<string>): QuasiObservable
       result.complete();
     }
   });
+
   return result;
 }
 
 export function parseLog(log: String): Promise<FlightLog> {
-  const lines = log.split('\n').filter(l => l);
+  const lines = log.split('\n');
   const subject = new QuasiSubject<string>();
   const parse = parseLogStream(subject);
 

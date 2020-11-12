@@ -176,7 +176,6 @@ export function parseLogStream(logStream: QuasiSubject<string>): QuasiObservable
 export function parseLog(log: String): Promise<FlightLog> {
   const lines = log.split('\n').filter(l => l);
   const subject = new QuasiSubject<string>();
-  lines.forEach(l => subject.next(l));
 
   const flightLog: FlightLog = {
     metaData: undefined,
@@ -189,6 +188,7 @@ export function parseLog(log: String): Promise<FlightLog> {
       flightLog.rows.push(event.row);
     }
   });
+  lines.forEach(l => subject.next(l));
 
   return new Promise<FlightLog>(resolve => {
     parse.toPromise().then(() => resolve(flightLog));

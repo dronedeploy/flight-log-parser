@@ -162,7 +162,7 @@ enum FlightLogHeader {
     rows:  [
         { 'Date/Time (GMT)': '06/04/2018 20:32:36',
         'Elapsed Time (sec)': 6.675,
-        Info: "{'message': 'Mission did take off'}",
+        Info: "[{'message': 'Mission did take off'}]",
         'Aircraft Battery Power (%)': 95,
         'Aircraft Battery Charge (mAh)': 3944,
         'Aircraft Battery Current (mA)': -13688,

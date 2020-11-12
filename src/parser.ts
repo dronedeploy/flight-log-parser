@@ -176,12 +176,12 @@ export function parseLogStream(logStream: QuasiSubject<string>): QuasiObservable
 export function parseLog(log: String): Promise<FlightLog> {
   const lines = log.split('\n').filter(l => l);
   const subject = new QuasiSubject<string>();
+  const parse = parseLogStream(subject);
 
   const flightLog: FlightLog = {
     metaData: undefined,
     rows: []
   }
-  const parse = parseLogStream(subject);
   parse.subscribe((event) => {
     flightLog.metaData = (event.meta) ? event.meta : flightLog.metaData;
     if (event.row) {

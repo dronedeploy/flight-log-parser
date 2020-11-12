@@ -190,8 +190,8 @@ export function parseLog(log: String): Promise<FlightLog> {
   });
   lines.forEach(l => subject.next(l));
 
-  return new Promise<FlightLog>(resolve => {
-    parse.toPromise().then(() => resolve(flightLog)).catch(() => resolve(flightLog));
+  return new Promise<FlightLog>((resolve, reject) => {
+    parse.toPromise().then(() => resolve(flightLog)).catch((reason => reject(reason)));
   });
 }
 

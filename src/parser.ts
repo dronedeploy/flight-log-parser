@@ -170,7 +170,10 @@ export function parseLogStream(logStream: QuasiSubject<string>): QuasiObservable
 
   }, (err) => { console.error('parsing error: ' + err); result.complete(); }, () => {
     if (!progress.completed) {
-      result.complete();
+      setTimeout(() => {
+        result.complete();
+        progress.completed = true;
+      }, 0);
     }
   });
 
@@ -187,12 +190,14 @@ export function parseLog(log: String): Promise<FlightLog> {
     rows: []
   }
   parse.subscribe((event) => {
+    // The metadata is updated as the file is parsed, so always grab the latest one.
     flightLog.metaData = (event.meta) ? event.meta : flightLog.metaData;
     if (event.row) {
       flightLog.rows.push(event.row);
     }
   });
   lines.forEach(l => subject.next(l));
+  subject.complete();
 
   return new Promise<FlightLog>((resolve, reject) => {
     parse.toPromise().then(() => resolve(flightLog)).catch((reason => reject(reason)));

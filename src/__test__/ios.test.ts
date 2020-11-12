@@ -27,8 +27,8 @@ describe('test parse ios logs', () => {
 
         expect(id).toEqual('N/A');
         expect(start).toBeNull();
-        expect(end).toBeNull();
-        expect(elapsed).toEqual(0);
+        expect(end).toEqual(new Date('2018-06-04T22:31:40.000Z'));
+        expect(elapsed).toEqual(160.313);
       });
 
       it('parsed log should have correct falsy value when aircraft info has no value', () => {

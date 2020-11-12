@@ -35,9 +35,6 @@ const META_REGEX = {
   platform: /^Platform\s+(.+)$/,
 };
 
-const LOG_HEADER_LINES = 30;
-const LOG_FOOTER_LINES = 3;
-
 export type Subscriber<T> = (value: T) => void;
 export type ErrorSubscriber = (value: any) => void;
 export type CompletionSubscriber = () => void;

@@ -162,7 +162,7 @@ export function parseLogStream(logStream: QuasiSubject<string>): QuasiObservable
           row,
           info: parseJsonInfo(row.Info),
         })
-      });
+      }).catch(reason => console.error(reason));
     }
 
   }, (err) => { console.error('parsing error: ' + err); result.complete(); }, () => {
@@ -205,7 +205,9 @@ function parseBody(lines: string[], sync?: boolean): Promise<FlightLogRow[]> {
   const text = lines.join('\n');
   const options = {
     delimiter: '\t',
+    escape: null,
     from: 1,
+    quote: null,
     relax_column_count: true,
   };
 

@@ -184,13 +184,18 @@ export function parseLog(log: String): Promise<FlightLog> {
 
   const flightLog: FlightLog = {
     metaData: {} as FlightLogMetaData,
-    rows: []
+    rows: [],
+    infos: []
   }
   parse.subscribe((event) => {
     // The metadata is updated as the file is parsed, so always grab the latest one.
     flightLog.metaData = (event.meta) ? event.meta : flightLog.metaData;
     if (event.row) {
       flightLog.rows.push(event.row);
+    }
+    if (event.info) {
+      // @ts-ignore
+      flightLog.infos.push(...event.info);
     }
   });
   lines.forEach(l => subject.next(l));
@@ -253,6 +258,7 @@ function parseBody(lines: string[], sync?: boolean): Promise<FlightLogRow[]> {
       const results = syncParse(text, options);
       onResults(undefined, results);
     } else {
+      // @ts-ignore
       parse(text, options, onResults);
     }
   });
@@ -364,7 +370,7 @@ function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData 
  *
  * @param info
  */
-function parseJsonInfo(info: string): object|undefined {
+function parseJsonInfo(info: string): undefined|Array<object> {
   if (!info) {
     return undefined;
   }

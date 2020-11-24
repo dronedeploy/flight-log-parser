@@ -185,12 +185,13 @@ export declare type FlightLogMetaData = {
 export declare type FlightLog = {
     metaData: FlightLogMetaData;
     rows: FlightLogRow[];
+    infos: object[];
 };
 export declare type FlightLogEvent = {
     meta: FlightLogMetaData;
     rowIndex?: number;
     row?: FlightLogRow;
-    info?: any;
+    info?: undefined | Array<object>;
 };
 export declare const FLIGHT_MODE_MAPPING: {
     0: string;

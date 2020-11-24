@@ -188,13 +188,14 @@ export type FlightLogMetaData = {
 export type FlightLog = {
   metaData: FlightLogMetaData;
   rows: FlightLogRow[];
+  infos: object[];
 };
 
 export type FlightLogEvent = {
   meta: FlightLogMetaData;
   rowIndex?: number;
   row?: FlightLogRow;
-  info?: any;  // Empty string => undefined, else parsed JSON blob.
+  info?: undefined|Array<object>;  // Empty string => undefined, else parsed JSON blob.
 };
 
 // based off of types in ios/android SDK FlightMode enums

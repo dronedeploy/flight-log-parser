@@ -185,7 +185,7 @@ export declare type FlightLogMetaData = {
 export declare type FlightLog = {
     metaData: FlightLogMetaData;
     rows: FlightLogRow[];
-    infos: object[];
+    infos: any[];
 };
 export declare type FlightLogEvent = {
     meta: FlightLogMetaData;

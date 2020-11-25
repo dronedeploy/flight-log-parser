@@ -188,7 +188,7 @@ export type FlightLogMetaData = {
 export type FlightLog = {
   metaData: FlightLogMetaData;
   rows: FlightLogRow[];
-  infos: object[];
+  infos: any[];
 };
 
 export type FlightLogEvent = {

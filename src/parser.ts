@@ -195,7 +195,7 @@ export function parseLog(log: String): Promise<FlightLog> {
     }
     if (event.info) {
       // @ts-ignore
-      flightLog.infos.push(...event.info);
+      flightLog.infos.push(event.info);
     }
   });
   lines.forEach(l => subject.next(l));

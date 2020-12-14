@@ -175,7 +175,7 @@ function parseLog(log) {
         }
         if (event.info) {
             // @ts-ignore
-            flightLog.infos.push(...event.info);
+            flightLog.infos.push(event.info);
         }
     });
     lines.forEach(l => subject.next(l));

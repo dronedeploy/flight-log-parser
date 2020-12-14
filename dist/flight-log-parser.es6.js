@@ -1379,9 +1379,10 @@ const META_REGEX = {
     rcFirmware: /^Remote Control Firmware\s+(.+)$/,
     cameraSerialNumber: /^Camera Serial Number\s+(.+)$/,
     elapsedTime: /^Elapsed Time \(sec\)\s+(.+)$/,
+    userId: /^User ID\s+(.+)$/,
+    organizationId: /^Organization ID\s+(.+)$/,
+    platform: /^Platform\s+(.+)$/,
 };
-const LOG_HEADER_LINES = 27;
-const LOG_FOOTER_LINES = 3;
 class QuasiSubject {
     constructor() {
         this.subscribers = [];
@@ -1432,31 +1433,32 @@ class QuasiSubject {
 }
 function parseLogStream(logStream) {
     const headerMetaLines = [];
-    let meta;
+    let meta = {};
     let rowHeaderLine;
-    const result = new QuasiSubject();
-    let progress = { index: 0, completed: false };
+    let row;
+    const progress = { index: 0, completed: false };
     let end;
+    const result = new QuasiSubject();
     logStream.subscribe((line) => {
-        if (!line.trim().length) {
+        line = line.trim();
+        if (!line.length) {
             return;
         }
-        if (headerMetaLines.length < LOG_HEADER_LINES) {
-            headerMetaLines.push(line);
-            progress.index++;
+        if (!rowHeaderLine) {
+            if (line.startsWith(FlightLogHeader.DateTime.split(' ')[0])) { // Strip off timezone.
+                rowHeaderLine = line;
+                meta = parseMetaData(headerMetaLines, []);
+                result.next({
+                    meta,
+                    rowIndex: progress.index
+                });
+            }
+            else {
+                headerMetaLines.push(line);
+                progress.index++;
+            }
             return;
         }
-        if (!meta) {
-            rowHeaderLine = line;
-            meta = parseMetaData(headerMetaLines, []);
-            // This is the beginning of the parsing.
-            result.next({
-                meta,
-                rowIndex: progress.index,
-            });
-            return;
-        }
-        let row;
         if (META_REGEX.footerLines.test(line)) {
             if (META_REGEX.sessionEnd.test(line)) {
                 end = fromUtcDateStr(findMatch([line], META_REGEX.sessionEnd));
@@ -1491,35 +1493,53 @@ function parseLogStream(logStream) {
                     meta,
                     rowIndex: progress.index++,
                     row,
+                    info: parseJsonInfo(row.Info),
                 });
-            });
+            }).catch(reason => console.error(reason));
         }
     }, (err) => { console.error('parsing error: ' + err); result.complete(); }, () => {
         if (!progress.completed) {
-            result.complete();
+            setTimeout(() => {
+                result.complete();
+                progress.completed = true;
+            }, 0);
         }
     });
     return result;
 }
 function parseLog(log) {
     const lines = log.split('\n');
-    if (lines[lines.length - 1] === '') {
-        lines.pop();
-    }
-    const header = lines.slice(0, LOG_HEADER_LINES);
-    const footer = lines.slice(-LOG_FOOTER_LINES);
-    const body = lines.slice(LOG_HEADER_LINES, -LOG_FOOTER_LINES);
-    const metaData = parseMetaData(header, footer);
-    return parseBody(body).then((rows) => ({
-        metaData,
-        rows,
-    }));
+    const subject = new QuasiSubject();
+    const parse = parseLogStream(subject);
+    const flightLog = {
+        metaData: {},
+        rows: [],
+        infos: []
+    };
+    parse.subscribe((event) => {
+        // The metadata is updated as the file is parsed, so always grab the latest one.
+        flightLog.metaData = (event.meta) ? event.meta : flightLog.metaData;
+        if (event.row) {
+            flightLog.rows.push(event.row);
+        }
+        if (event.info) {
+            // @ts-ignore
+            flightLog.infos.push(event.info);
+        }
+    });
+    lines.forEach(l => subject.next(l));
+    subject.complete();
+    return new Promise((resolve, reject) => {
+        parse.toPromise().then(() => resolve(flightLog)).catch((reason => reject(reason)));
+    });
 }
 function parseBody(lines, sync) {
     const text = lines.join('\n');
     const options = {
         delimiter: '\t',
+        escape: null,
         from: 1,
+        quote: null,
         relax_column_count: true,
     };
     return new Promise((resolve, reject) => {
@@ -1556,6 +1576,7 @@ function parseBody(lines, sync) {
             onResults(undefined, results);
         }
         else {
+            // @ts-ignore
             lib(text, options, onResults);
         }
     });
@@ -1617,6 +1638,7 @@ function parseMetaData(headers, footers) {
         device: {
             model: findMatch(meta, META_REGEX.deviceModel),
             os: findMatch(meta, META_REGEX.deviceOS).replace(/\t/g, ' '),
+            platform: findMatch(meta, META_REGEX.platform),
         },
         aircraft: {
             model: findMatch(meta, META_REGEX.aircraftModel),
@@ -1645,7 +1667,27 @@ function parseMetaData(headers, footers) {
         camera: {
             serialNumber: findMatch(meta, META_REGEX.cameraSerialNumber),
         },
+        user: {
+            userId: findMatch(meta, META_REGEX.userId),
+            organizationId: findMatch(meta, META_REGEX.organizationId),
+        },
     };
+}
+/**
+ * Parse out the given string and return an object if the string is JSON, return undefined otherwise.
+ *
+ * @param info
+ */
+function parseJsonInfo(info) {
+    if (!info) {
+        return undefined;
+    }
+    try {
+        return JSON.parse(info);
+    }
+    catch (e) {
+        return undefined;
+    }
 }
 
 export { FlightLogHeader, FLIGHT_MODE_MAPPING, parseLog, parseLogStream, QuasiSubject, fromUtcDateStr };

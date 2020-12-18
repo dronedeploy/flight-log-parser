@@ -15,13 +15,17 @@ const util_1 = require("util");
 const parser_1 = require("../parser");
 const readFileAsync = util_1.promisify(fs_1.default.readFile);
 const jsonInfoLogFilePath = path_1.default.join(__dirname, '../../testlog/json-info.log');
+const jsonInfoLogFilePath2 = path_1.default.join(__dirname, '../../testlog/json-info-2-plans.log');
 describe('Test parseLog on log file with JSON Info column', () => {
     let log;
+    let log2;
     beforeAll(() => __awaiter(this, void 0, void 0, function* () {
         log = yield readFileAsync(jsonInfoLogFilePath, { encoding: 'utf-8' });
+        log2 = yield readFileAsync(jsonInfoLogFilePath2, { encoding: 'utf-8' });
     }));
-    it('log file exists', () => __awaiter(this, void 0, void 0, function* () {
+    it('log files exists', () => __awaiter(this, void 0, void 0, function* () {
         expect(log).toBeTruthy();
+        expect(log2).toBeTruthy();
     }));
     describe('parsed json-info log', () => {
         let metadata;
@@ -102,6 +106,28 @@ describe('Test parseLog on log file with JSON Info column', () => {
                 templateId: "5f1b24bb3fd4e17d4952cf4b"
             });
         }));
+    });
+    describe('parsed json-info log with 2 plans', () => {
+        let metadata;
+        const rows = [];
+        const info = [];
+        beforeAll(() => __awaiter(this, void 0, void 0, function* () {
+            const lines = log2.split('\n');
+            const subject = new parser_1.QuasiSubject();
+            const parse = parser_1.parseLogStream(subject);
+            parse.subscribe((event) => {
+                metadata = (event.meta) ? event.meta : metadata;
+                if (event.row)
+                    rows.push(event.row);
+                if (event.info)
+                    info.push(event.info);
+            });
+            lines.forEach(l => subject.next(l));
+            subject.complete();
+        }));
+        it('should have 2 plans', () => {
+            expect(info.length).toEqual(2);
+        });
     });
 });
 //# sourceMappingURL=json-info.test.js.map

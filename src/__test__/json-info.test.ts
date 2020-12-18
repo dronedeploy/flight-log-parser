@@ -7,15 +7,19 @@ import { FlightLogMetaData, FlightLogRow } from '../types';
 
 const readFileAsync = promisify(fs.readFile);
 const jsonInfoLogFilePath = path.join(__dirname, '../../testlog/json-info.log');
+const jsonInfoLogFilePath2 = path.join(__dirname, '../../testlog/json-info-2-plans.log');
 
 describe('Test parseLog on log file with JSON Info column', () => {
   let log: string;
+  let log2: string;
   beforeAll(async () => {
     log = await readFileAsync(jsonInfoLogFilePath, { encoding: 'utf-8' });
+    log2 = await readFileAsync(jsonInfoLogFilePath2, { encoding: 'utf-8' });
   });
 
-  it('log file exists', async () => {
+  it('log files exists', async () => {
     expect(log).toBeTruthy();
+    expect(log2).toBeTruthy();
   });
 
   describe('parsed json-info log', () => {
@@ -98,6 +102,28 @@ describe('Test parseLog on log file with JSON Info column', () => {
         projectId: "5e5da0be976932beb266c15f",
         templateId: "5f1b24bb3fd4e17d4952cf4b"
       });
+    });
+  });
+
+  describe('parsed json-info log with 2 plans', () => {
+    let metadata: FlightLogMetaData;
+    const rows: FlightLogRow[] = [];
+    const info: any[] = [];
+    beforeAll(async () => {
+      const lines = log2.split('\n');
+      const subject = new QuasiSubject<string>();
+      const parse = parseLogStream(subject);
+      parse.subscribe((event) => {
+        metadata = (event.meta) ? event.meta : metadata;
+        if (event.row) rows.push(event.row);
+        if (event.info) info.push(event.info);
+      });
+      lines.forEach(l => subject.next(l));
+      subject.complete();
+    });
+
+    it('should have 2 plans', () => {
+      expect(info.length).toEqual(2);
     });
   });
 });

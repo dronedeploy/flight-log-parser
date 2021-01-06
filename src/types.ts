@@ -132,7 +132,7 @@ export enum FlightLogHeader {
   CompassStateLastUpdated = "Compass State Last Updated (ms)",
   CompassCalibrationState = "Compass Calibration State",
   CompassCalibrationLastUpdated = "Compass Calibration Last Updated (ms)",
-DeviceToAircraftDistance = 'Device > Aircraft Distance - XY (ft)',
+  DeviceToAircraftDistance = 'Device > Aircraft Distance - XY (ft)',
 }
 
 export type FlightLogRow = {
@@ -150,6 +150,7 @@ export type FlightLogMetaData = {
   device: {
     model: string;
     os: string;
+    platform: string;
   };
   aircraft: {
     model: string;
@@ -178,17 +179,23 @@ export type FlightLogMetaData = {
   camera: {
     serialNumber: string;
   };
+  user: {
+    userId: string;
+    organizationId: string;
+  };
 };
 
 export type FlightLog = {
   metaData: FlightLogMetaData;
   rows: FlightLogRow[];
+  infos: any[];
 };
 
 export type FlightLogEvent = {
   meta: FlightLogMetaData;
   rowIndex?: number;
   row?: FlightLogRow;
+  info?: undefined|Array<object>;  // Empty string => undefined, else parsed JSON blob.
 };
 
 // based off of types in ios/android SDK FlightMode enums

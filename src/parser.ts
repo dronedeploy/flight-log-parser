@@ -160,9 +160,9 @@ export function parseLogStream(logStream: QuasiSubject<string>): QuasiObservable
           meta,
           rowIndex: progress.index++,
           row,
-          info: parseJsonInfo(row.Info),
+          info: parseJsonInfo(row.Info),  // Parsed Info column, if the column was populated with a JSON array.
         })
-      }).catch(reason => console.error(reason));
+      });
     }
 
   }, (err) => { console.error('parsing error: ' + err); result.complete(); }, () => {

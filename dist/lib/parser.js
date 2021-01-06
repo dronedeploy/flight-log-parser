@@ -145,7 +145,7 @@ function parseLogStream(logStream) {
                     row,
                     info: parseJsonInfo(row.Info),
                 });
-            }).catch(reason => console.error(reason));
+            });
         }
     }, (err) => { console.error('parsing error: ' + err); result.complete(); }, () => {
         if (!progress.completed) {

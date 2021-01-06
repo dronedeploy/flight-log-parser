@@ -97,7 +97,7 @@ FlightLogMetaData = {
   };
   user: {
     userId: string;
-    orgasnizationId: string;
+    organizationId: string;
   };
 };
 ```

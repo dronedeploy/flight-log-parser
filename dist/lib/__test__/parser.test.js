@@ -61,7 +61,7 @@ describe('parser', () => {
                 device: {
                     model: 'iPad',
                     os: 'iOS 11.2.6',
-                    platform: 'iOS',
+                    platform: 'N/A',
                 },
                 flightController: {
                     firmware: '03.02.44.07',
@@ -81,8 +81,8 @@ describe('parser', () => {
                     start: new Date('2018-05-23T20:50:18.000Z'),
                 },
                 user: {
-                    userId: '5fac2b9256338b4d7fd43852',
-                    organizationId: '5fac2c0dd27ea76caff42e9f',
+                    userId: 'N/A',
+                    organizationId: 'N/A',
                 },
             };
             return parseLogStreamObs.toPromise().then(() => {
@@ -92,9 +92,9 @@ describe('parser', () => {
                         session: {
                             elapsed: 0,
                             end: null,
-                        }
+                        },
                     }),
-                    rowIndex: 30,
+                    rowIndex: 27,
                 });
                 expect(events[events.length - 2]).toEqual({
                     info: undefined,
@@ -102,7 +102,7 @@ describe('parser', () => {
                         session: {
                             elapsed: 233.121,
                             end: new Date('2018-05-23T20:54:11.000Z'),
-                        }
+                        },
                     }),
                     row: {
                         'Aircraft Barometric Altitude (ft)': 2.952756,
@@ -234,11 +234,11 @@ describe('parser', () => {
                         'RC State Last Updated (ms)': '26',
                         'RC State Value': 2,
                     },
-                    rowIndex: 36,
+                    rowIndex: 33,
                 });
                 expect(events[events.length - 1]).toEqual({
                     meta,
-                    rowIndex: 37,
+                    rowIndex: 34,
                 });
             });
         });

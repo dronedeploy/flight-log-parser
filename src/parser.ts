@@ -8,6 +8,7 @@ const syncParse = require('csv-parse/lib/sync');
 
 const META_REGEX = {
   appVersion: /^#DroneDeploy\s+(.+)$/,
+  isCustomRecord: /^Custom Record\s+(.+)$/,
   sessionId: /^Session ID\s+(.+)$/,
   sessionStart: /^Session Start\s+(.+)$/,
   sessionEnd: /^Date\/Time \(UTC\)\s+(.+)$/,
@@ -302,6 +303,7 @@ function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData 
   const meta = [...headers, ...footers];
   let end = findMatch(meta, META_REGEX.sessionEnd);
   let elapsed = findMatch(meta, META_REGEX.elapsedTime);
+  let isCustomRecord = findMatch(meta, META_REGEX.isCustomRecord);
 
   // if we weren't able to parse an end date or an elapsed time from our footer (which is really just the last three
   // lines of the log file), it's likely that we have a truncated log file. if that's the case, we can still salvage
@@ -320,7 +322,7 @@ function parseMetaData(headers: string[], footers: string[]): FlightLogMetaData 
 
   return {
     appVersion: findMatch(meta, META_REGEX.appVersion),
-    isCustomRecord: false,
+    isCustomRecord: isCustomRecord === 'N/A' ? false : !!isCustomRecord,
     session: {
       id: findMatch(meta, META_REGEX.sessionId),
       start: fromUtcDateStr(findMatch(meta, META_REGEX.sessionStart)) as Date,

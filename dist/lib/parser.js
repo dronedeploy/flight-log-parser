@@ -282,6 +282,7 @@ function parseMetaData(headers, footers) {
     }
     return {
         appVersion: findMatch(meta, META_REGEX.appVersion),
+        isCustomRecord: false,
         session: {
             id: findMatch(meta, META_REGEX.sessionId),
             start: fromUtcDateStr(findMatch(meta, META_REGEX.sessionStart)),

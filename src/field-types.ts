@@ -87,6 +87,7 @@ export const BOOL_FIELDS = new Set([
   FlightLogHeader.AircraftSmartGoHomeRequesting,
   FlightLogHeader.AircraftUltrasonicOn,
   FlightLogHeader.AircraftVisionOn,
+  FlightLogHeader.CustomRecord,
   FlightLogHeader.LandingGearIsMovable,
   FlightLogHeader.RCGoHome,
   FlightLogHeader.RCRecord,

@@ -86,6 +86,7 @@ exports.BOOL_FIELDS = new Set([
     types_1.FlightLogHeader.AircraftSmartGoHomeRequesting,
     types_1.FlightLogHeader.AircraftUltrasonicOn,
     types_1.FlightLogHeader.AircraftVisionOn,
+    types_1.FlightLogHeader.CustomRecord,
     types_1.FlightLogHeader.LandingGearIsMovable,
     types_1.FlightLogHeader.RCGoHome,
     types_1.FlightLogHeader.RCRecord,

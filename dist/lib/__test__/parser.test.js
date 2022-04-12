@@ -47,6 +47,7 @@ describe('parser', () => {
                     name: '123',
                 },
                 appVersion: '0.0.0',
+                isCustomRecord: false,
                 battery: {
                     cells: 4,
                     chargeVolume: 5842,
@@ -177,6 +178,7 @@ describe('parser', () => {
                         'Aircraft Vel - Y (mph)': 0,
                         'Aircraft Vel - Z (mph)': 0,
                         'Aircraft Vision On': false,
+                        'Custom Record': false,
                         'Date/Time (UTC)': new Date('2018-05-23T20:54:11.000Z'),
                         'Device > Aircraft Distance - XY (ft)': 19.92750419698512,
                         'Device Latitude (Degrees)': '37.77179522443355',

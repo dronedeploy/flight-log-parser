@@ -47,6 +47,7 @@ describe('Test parseLog on log file with JSON Info column', () => {
           "name": "Fake Aircraft Name"
         },
         "appVersion": "4.21.0.1517",
+        "isCustomRecord": false,
         "battery": {
           "cells": 0,
           "chargeVolume": 1,

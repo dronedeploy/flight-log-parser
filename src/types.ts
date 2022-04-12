@@ -133,6 +133,7 @@ export enum FlightLogHeader {
   CompassCalibrationState = "Compass Calibration State",
   CompassCalibrationLastUpdated = "Compass Calibration Last Updated (ms)",
   DeviceToAircraftDistance = 'Device > Aircraft Distance - XY (ft)',
+  CustomRecord = "Custom Record"
 }
 
 export type FlightLogRow = {
@@ -141,6 +142,7 @@ export type FlightLogRow = {
 
 export type FlightLogMetaData = {
   appVersion: string;
+  isCustomRecord: boolean;
   session: {
     id: string;
     start: Date;

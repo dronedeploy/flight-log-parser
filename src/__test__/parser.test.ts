@@ -47,6 +47,7 @@ describe('parser', () => {
           name: '123',
         },
         appVersion: '0.0.0',
+        isCustomRecord: false,
         battery: {
           cells: 4,
           chargeVolume: 5842,

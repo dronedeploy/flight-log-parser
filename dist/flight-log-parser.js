@@ -143,6 +143,7 @@
       FlightLogHeader["CompassCalibrationState"] = "Compass Calibration State";
       FlightLogHeader["CompassCalibrationLastUpdated"] = "Compass Calibration Last Updated (ms)";
       FlightLogHeader["DeviceToAircraftDistance"] = "Device > Aircraft Distance - XY (ft)";
+      FlightLogHeader["CustomRecord"] = "Custom Record";
   })(exports.FlightLogHeader || (exports.FlightLogHeader = {}));
   // based off of types in ios/android SDK FlightMode enums
   const FLIGHT_MODE_MAPPING = {
@@ -1337,6 +1338,7 @@
       exports.FlightLogHeader.AircraftSmartGoHomeRequesting,
       exports.FlightLogHeader.AircraftUltrasonicOn,
       exports.FlightLogHeader.AircraftVisionOn,
+      exports.FlightLogHeader.CustomRecord,
       exports.FlightLogHeader.LandingGearIsMovable,
       exports.FlightLogHeader.RCGoHome,
       exports.FlightLogHeader.RCRecord,
@@ -1634,6 +1636,7 @@
       }
       return {
           appVersion: findMatch(meta, META_REGEX.appVersion),
+          isCustomRecord: false,
           session: {
               id: findMatch(meta, META_REGEX.sessionId),
               start: fromUtcDateStr(findMatch(meta, META_REGEX.sessionStart)),

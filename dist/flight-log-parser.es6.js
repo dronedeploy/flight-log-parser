@@ -1,6 +1,4 @@
-import buffer from 'buffer';
 import stream from 'stream';
-import util from 'util';
 
 var FlightLogHeader;
 (function (FlightLogHeader) {
@@ -182,1070 +180,968 @@ const FLIGHT_MODE_MAPPING = {
     255: 'Unknown',
 };
 
-function createCommonjsModule(fn, module) {
-	return module = { exports: {} }, fn(module, module.exports), module.exports;
-}
-
-var safeBuffer = createCommonjsModule(function (module, exports) {
-/* eslint-disable node/no-deprecated-api */
-
-var Buffer = buffer.Buffer;
-
-// alternative to using Object.keys for old browsers
-function copyProps (src, dst) {
-  for (var key in src) {
-    dst[key] = src[key];
+class ResizeableBuffer{
+  constructor(size=100){
+    this.size = size;
+    this.length = 0;
+    this.buf = Buffer.alloc(size);
   }
-}
-if (Buffer.from && Buffer.alloc && Buffer.allocUnsafe && Buffer.allocUnsafeSlow) {
-  module.exports = buffer;
-} else {
-  // Copy properties from require('buffer')
-  copyProps(buffer, exports);
-  exports.Buffer = SafeBuffer;
-}
-
-function SafeBuffer (arg, encodingOrOffset, length) {
-  return Buffer(arg, encodingOrOffset, length)
-}
-
-// Copy static methods from Buffer
-copyProps(Buffer, SafeBuffer);
-
-SafeBuffer.from = function (arg, encodingOrOffset, length) {
-  if (typeof arg === 'number') {
-    throw new TypeError('Argument must not be a number')
-  }
-  return Buffer(arg, encodingOrOffset, length)
-};
-
-SafeBuffer.alloc = function (size, fill, encoding) {
-  if (typeof size !== 'number') {
-    throw new TypeError('Argument must be a number')
-  }
-  var buf = Buffer(size);
-  if (fill !== undefined) {
-    if (typeof encoding === 'string') {
-      buf.fill(fill, encoding);
-    } else {
-      buf.fill(fill);
+  prepend(val){
+    const length = this.length++;
+    if(length === this.size){
+      this.resize();
     }
-  } else {
-    buf.fill(0);
+    const buf = this.clone();
+    this.buf[0] = val;
+    buf.copy(this.buf,1, 0, length);
   }
-  return buf
-};
-
-SafeBuffer.allocUnsafe = function (size) {
-  if (typeof size !== 'number') {
-    throw new TypeError('Argument must be a number')
-  }
-  return Buffer(size)
-};
-
-SafeBuffer.allocUnsafeSlow = function (size) {
-  if (typeof size !== 'number') {
-    throw new TypeError('Argument must be a number')
-  }
-  return buffer.SlowBuffer(size)
-};
-});
-var safeBuffer_1 = safeBuffer.Buffer;
-
-/*<replacement>*/
-
-var Buffer$1 = safeBuffer.Buffer;
-/*</replacement>*/
-
-var isEncoding = Buffer$1.isEncoding || function (encoding) {
-  encoding = '' + encoding;
-  switch (encoding && encoding.toLowerCase()) {
-    case 'hex':case 'utf8':case 'utf-8':case 'ascii':case 'binary':case 'base64':case 'ucs2':case 'ucs-2':case 'utf16le':case 'utf-16le':case 'raw':
-      return true;
-    default:
-      return false;
-  }
-};
-
-function _normalizeEncoding(enc) {
-  if (!enc) return 'utf8';
-  var retried;
-  while (true) {
-    switch (enc) {
-      case 'utf8':
-      case 'utf-8':
-        return 'utf8';
-      case 'ucs2':
-      case 'ucs-2':
-      case 'utf16le':
-      case 'utf-16le':
-        return 'utf16le';
-      case 'latin1':
-      case 'binary':
-        return 'latin1';
-      case 'base64':
-      case 'ascii':
-      case 'hex':
-        return enc;
-      default:
-        if (retried) return; // undefined
-        enc = ('' + enc).toLowerCase();
-        retried = true;
+  append(val){
+    const length = this.length++;
+    if(length === this.size){
+      this.resize();
     }
+    this.buf[length] = val;
+  }
+  clone(){
+    return Buffer.from(this.buf.slice(0, this.length))
+  }
+  resize(){
+    const length = this.length;
+    this.size = this.size * 2;
+    const buf = Buffer.alloc(this.size);
+    this.buf.copy(buf,0, 0, length);
+    this.buf = buf;
+  }
+  toString(){
+    return this.buf.slice(0, this.length).toString()
+  }
+  reset(){
+    this.length = 0;
   }
 }
-// Do not cache `Buffer.isEncoding` when checking encoding names as some
-// modules monkey-patch it to support additional encodings
-function normalizeEncoding(enc) {
-  var nenc = _normalizeEncoding(enc);
-  if (typeof nenc !== 'string' && (Buffer$1.isEncoding === isEncoding || !isEncoding(enc))) throw new Error('Unknown encoding: ' + enc);
-  return nenc || enc;
-}
 
-// StringDecoder provides an interface for efficiently splitting a series of
-// buffers into a series of JS strings without breaking apart multi-byte
-// characters.
-var StringDecoder_1 = StringDecoder;
-function StringDecoder(encoding) {
-  this.encoding = normalizeEncoding(encoding);
-  var nb;
-  switch (this.encoding) {
-    case 'utf16le':
-      this.text = utf16Text;
-      this.end = utf16End;
-      nb = 4;
-      break;
-    case 'utf8':
-      this.fillLast = utf8FillLast;
-      nb = 4;
-      break;
-    case 'base64':
-      this.text = base64Text;
-      this.end = base64End;
-      nb = 3;
-      break;
-    default:
-      this.write = simpleWrite;
-      this.end = simpleEnd;
-      return;
-  }
-  this.lastNeed = 0;
-  this.lastTotal = 0;
-  this.lastChar = Buffer$1.allocUnsafe(nb);
-}
+var ResizeableBuffer_1 = ResizeableBuffer;
 
-StringDecoder.prototype.write = function (buf) {
-  if (buf.length === 0) return '';
-  var r;
-  var i;
-  if (this.lastNeed) {
-    r = this.fillLast(buf);
-    if (r === undefined) return '';
-    i = this.lastNeed;
-    this.lastNeed = 0;
-  } else {
-    i = 0;
-  }
-  if (i < buf.length) return r ? r + this.text(buf, i) : this.text(buf, i);
-  return r || '';
-};
+/*
+CSV Parse
 
-StringDecoder.prototype.end = utf8End;
+Please look at the [project documentation](https://csv.js.org/parse/) for additional
+information.
+*/
 
-// Returns only complete characters in a Buffer
-StringDecoder.prototype.text = utf8Text;
+const { Transform } = stream;
 
-// Attempts to complete a partial non-UTF-8 character using bytes from a Buffer
-StringDecoder.prototype.fillLast = function (buf) {
-  if (this.lastNeed <= buf.length) {
-    buf.copy(this.lastChar, this.lastTotal - this.lastNeed, 0, this.lastNeed);
-    return this.lastChar.toString(this.encoding, 0, this.lastTotal);
-  }
-  buf.copy(this.lastChar, this.lastTotal - this.lastNeed, 0, buf.length);
-  this.lastNeed -= buf.length;
-};
 
-// Checks the type of a UTF-8 byte, whether it's ASCII, a leading byte, or a
-// continuation byte. If an invalid byte is detected, -2 is returned.
-function utf8CheckByte(byte) {
-  if (byte <= 0x7F) return 0;else if (byte >> 5 === 0x06) return 2;else if (byte >> 4 === 0x0E) return 3;else if (byte >> 3 === 0x1E) return 4;
-  return byte >> 6 === 0x02 ? -1 : -2;
-}
+const cr = 13;
+const nl = 10;
+const space = 32;
+const tab = 9;
+const bom_utf8 = Buffer.from([239, 187, 191]);
 
-// Checks at most 3 bytes at the end of a Buffer in order to detect an
-// incomplete multi-byte UTF-8 character. The total number of bytes (2, 3, or 4)
-// needed to complete the UTF-8 character (if applicable) are returned.
-function utf8CheckIncomplete(self, buf, i) {
-  var j = buf.length - 1;
-  if (j < i) return 0;
-  var nb = utf8CheckByte(buf[j]);
-  if (nb >= 0) {
-    if (nb > 0) self.lastNeed = nb - 1;
-    return nb;
-  }
-  if (--j < i || nb === -2) return 0;
-  nb = utf8CheckByte(buf[j]);
-  if (nb >= 0) {
-    if (nb > 0) self.lastNeed = nb - 2;
-    return nb;
-  }
-  if (--j < i || nb === -2) return 0;
-  nb = utf8CheckByte(buf[j]);
-  if (nb >= 0) {
-    if (nb > 0) {
-      if (nb === 2) nb = 0;else self.lastNeed = nb - 3;
+class Parser extends Transform {
+  constructor(opts = {}){
+    super({...{readableObjectMode: true}, ...opts});
+    const options = {};
+    // Merge with user options
+    for(let opt in opts){
+      options[underscore(opt)] = opts[opt];
     }
-    return nb;
-  }
-  return 0;
-}
-
-// Validates as many continuation bytes for a multi-byte UTF-8 character as
-// needed or are available. If we see a non-continuation byte where we expect
-// one, we "replace" the validated continuation bytes we've seen so far with
-// a single UTF-8 replacement character ('\ufffd'), to match v8's UTF-8 decoding
-// behavior. The continuation byte check is included three times in the case
-// where all of the continuation bytes for a character exist in the same buffer.
-// It is also done this way as a slight performance increase instead of using a
-// loop.
-function utf8CheckExtraBytes(self, buf, p) {
-  if ((buf[0] & 0xC0) !== 0x80) {
-    self.lastNeed = 0;
-    return '\ufffd';
-  }
-  if (self.lastNeed > 1 && buf.length > 1) {
-    if ((buf[1] & 0xC0) !== 0x80) {
-      self.lastNeed = 1;
-      return '\ufffd';
+    // Normalize option `bom`
+    if(options.bom === undefined || options.bom === null || options.bom === false){
+      options.bom = false;
+    }else if(options.bom !== true){
+      throw new Error(`Invalid Option: bom must be true, got ${JSON.stringify(options.bom)}`)
     }
-    if (self.lastNeed > 2 && buf.length > 2) {
-      if ((buf[2] & 0xC0) !== 0x80) {
-        self.lastNeed = 2;
-        return '\ufffd';
+    // Normalize option `cast`
+    let fnCastField = null;
+    if(options.cast === undefined || options.cast === null || options.cast === false || options.cast === ''){
+      options.cast = undefined;
+    }else if(typeof options.cast === 'function'){
+      fnCastField = options.cast;
+      options.cast = true;
+    }else if(options.cast !== true){
+      throw new Error('Invalid Option: cast must be true or a function')
+    }
+    // Normalize option `cast_date`
+    if(options.cast_date === undefined || options.cast_date === null || options.cast_date === false || options.cast_date === ''){
+      options.cast_date = false;
+    }else if(options.cast_date === true){
+      options.cast_date = function(value){
+        const date = Date.parse(value);
+        return !isNaN(date) ? new Date(date) : value
+      };
+    }else if(typeof options.cast_date !== 'function'){
+      throw new Error('Invalid Option: cast_date must be true or a function')
+    }
+    // Normalize option `columns`
+    let fnFirstLineToHeaders = null;
+    if(options.columns === true){
+      // Fields in the first line are converted as-is to columns
+      fnFirstLineToHeaders = undefined;
+    }else if(typeof options.columns === 'function'){
+      fnFirstLineToHeaders = options.columns;
+      options.columns = true;
+    }else if(Array.isArray(options.columns)){
+      options.columns = normalizeColumnsArray(options.columns);
+    }else if(options.columns === undefined || options.columns === null || options.columns === false){
+      options.columns = false;
+    }else{
+      throw new Error(`Invalid Option columns: expect an object or true, got ${JSON.stringify(options.columns)}`)
+    }
+    // Normalize option `comment`
+    if(options.comment === undefined || options.comment === null || options.comment === false || options.comment === ''){
+      options.comment = null;
+    }else{
+      if(typeof options.comment === 'string'){
+        options.comment = Buffer.from(options.comment);
+      }
+      if(!Buffer.isBuffer(options.comment)){
+        throw new Error(`Invalid Option: comment must be a buffer or a string, got ${JSON.stringify(options.comment)}`)
       }
     }
-  }
-}
-
-// Attempts to complete a multi-byte UTF-8 character using bytes from a Buffer.
-function utf8FillLast(buf) {
-  var p = this.lastTotal - this.lastNeed;
-  var r = utf8CheckExtraBytes(this, buf, p);
-  if (r !== undefined) return r;
-  if (this.lastNeed <= buf.length) {
-    buf.copy(this.lastChar, p, 0, this.lastNeed);
-    return this.lastChar.toString(this.encoding, 0, this.lastTotal);
-  }
-  buf.copy(this.lastChar, p, 0, buf.length);
-  this.lastNeed -= buf.length;
-}
-
-// Returns all complete UTF-8 characters in a Buffer. If the Buffer ended on a
-// partial character, the character's bytes are buffered until the required
-// number of bytes are available.
-function utf8Text(buf, i) {
-  var total = utf8CheckIncomplete(this, buf, i);
-  if (!this.lastNeed) return buf.toString('utf8', i);
-  this.lastTotal = total;
-  var end = buf.length - (total - this.lastNeed);
-  buf.copy(this.lastChar, 0, end);
-  return buf.toString('utf8', i, end);
-}
-
-// For UTF-8, a replacement character is added when ending on a partial
-// character.
-function utf8End(buf) {
-  var r = buf && buf.length ? this.write(buf) : '';
-  if (this.lastNeed) return r + '\ufffd';
-  return r;
-}
-
-// UTF-16LE typically needs two bytes per character, but even if we have an even
-// number of bytes available, we need to check if we end on a leading/high
-// surrogate. In that case, we need to wait for the next two bytes in order to
-// decode the last character properly.
-function utf16Text(buf, i) {
-  if ((buf.length - i) % 2 === 0) {
-    var r = buf.toString('utf16le', i);
-    if (r) {
-      var c = r.charCodeAt(r.length - 1);
-      if (c >= 0xD800 && c <= 0xDBFF) {
-        this.lastNeed = 2;
-        this.lastTotal = 4;
-        this.lastChar[0] = buf[buf.length - 2];
-        this.lastChar[1] = buf[buf.length - 1];
-        return r.slice(0, -1);
+    // Normalize option `delimiter`
+    if(options.delimiter === undefined || options.delimiter === null || options.delimiter === false){
+      options.delimiter = Buffer.from(',');
+    }else if(Buffer.isBuffer(options.delimiter)){
+      if(options.delimiter.length === 0){
+        throw new Error(`Invalid Option: delimiter must be a non empty buffer`)
+      }
+      // Great, nothing to do
+    }else if(typeof options.delimiter === 'string'){
+      if(options.delimiter.length === 0){
+        throw new Error(`Invalid Option: delimiter must be a non empty string`)
+      }
+      options.delimiter = Buffer.from(options.delimiter);
+    }else{
+      throw new Error(`Invalid Option: delimiter must be a string or a buffer, got ${options.delimiter}`)
+    }
+    // Normalize option `escape`
+    if(options.escape === undefined || options.escape === null){
+      options.escape = Buffer.from('"');
+    }else if(typeof options.escape === 'string'){
+      options.escape = Buffer.from(options.escape);
+    }
+    if(!Buffer.isBuffer(options.escape)){
+      throw new Error(`Invalid Option: escape must be a buffer or a string, got ${JSON.stringify(options.escape)}`)
+    }else if(options.escape.length !== 1){
+      throw new Error(`Invalid Option Length: escape must be one character, got ${options.escape.length}`)
+    }else{
+      options.escape = options.escape[0];
+    }
+    // Normalize option `from`
+    if(options.from === undefined || options.from === null){
+      options.from = 1;
+    }else{
+      if(typeof options.from === 'string' && /\d+/.test(options.from)){
+        options.from = parseInt(options.from);
+      }
+      if(Number.isInteger(options.from)){
+        if(options.from < 0){
+          throw new Error(`Invalid Option: from must be a positive integer, got ${JSON.stringify(opts.from)}`)
+        }
+      }else{
+        throw new Error(`Invalid Option: from must be an integer, got ${JSON.stringify(options.from)}`)
       }
     }
-    return r;
-  }
-  this.lastNeed = 1;
-  this.lastTotal = 2;
-  this.lastChar[0] = buf[buf.length - 1];
-  return buf.toString('utf16le', i, buf.length - 1);
-}
-
-// For UTF-16LE we do not explicitly append special replacement characters if we
-// end on a partial character, we simply let v8 handle that.
-function utf16End(buf) {
-  var r = buf && buf.length ? this.write(buf) : '';
-  if (this.lastNeed) {
-    var end = this.lastTotal - this.lastNeed;
-    return r + this.lastChar.toString('utf16le', 0, end);
-  }
-  return r;
-}
-
-function base64Text(buf, i) {
-  var n = (buf.length - i) % 3;
-  if (n === 0) return buf.toString('base64', i);
-  this.lastNeed = 3 - n;
-  this.lastTotal = 3;
-  if (n === 1) {
-    this.lastChar[0] = buf[buf.length - 1];
-  } else {
-    this.lastChar[0] = buf[buf.length - 2];
-    this.lastChar[1] = buf[buf.length - 1];
-  }
-  return buf.toString('base64', i, buf.length - n);
-}
-
-function base64End(buf) {
-  var r = buf && buf.length ? this.write(buf) : '';
-  if (this.lastNeed) return r + this.lastChar.toString('base64', 0, 3 - this.lastNeed);
-  return r;
-}
-
-// Pass bytes on through for single-byte encodings (e.g. ascii, latin1, hex)
-function simpleWrite(buf) {
-  return buf.toString(this.encoding);
-}
-
-function simpleEnd(buf) {
-  return buf && buf.length ? this.write(buf) : '';
-}
-
-var string_decoder = {
-	StringDecoder: StringDecoder_1
-};
-
-// Generated by CoffeeScript 2.2.4
-// # CSV Parser
-
-// This module provides a CSV parser tested and used against large datasets. Over
-// the year, it has been enhance and is now full of useful options.
-
-// Please look at the [README], the [project website][site] the [samples] and the
-// [tests] for additional information.
-var Parser, StringDecoder$1, isObjLiteral, stream$1, util$1;
-
-stream$1 = stream;
-
-util$1 = util;
-
-StringDecoder$1 = string_decoder.StringDecoder;
-
-// ## Usage
-
-// Callback approach, for ease of use:   
-
-// `parse(data, [options], callback)`     
-
-// [Node.js Stream API][stream], for maximum of power:   
-
-// `parse([options], [callback])`   
-var lib = function() {
-  var callback, called, chunks, data, err, options, parser;
-  if (arguments.length === 3) {
-    data = arguments[0];
-    options = arguments[1];
-    callback = arguments[2];
-    if (typeof callback !== 'function') {
-      throw Error(`Invalid callback argument: ${JSON.stringify(callback)}`);
-    }
-    if (!(typeof data === 'string' || Buffer.isBuffer(arguments[0]))) {
-      return callback(Error(`Invalid data argument: ${JSON.stringify(data)}`));
-    }
-  } else if (arguments.length === 2) {
-    // 1st arg is data:string or options:object
-    if (typeof arguments[0] === 'string' || Buffer.isBuffer(arguments[0])) {
-      data = arguments[0];
-    } else if (isObjLiteral(arguments[0])) {
-      options = arguments[0];
-    } else {
-      err = `Invalid first argument: ${JSON.stringify(arguments[0])}`;
-    }
-    // 2nd arg is options:object or callback:function
-    if (typeof arguments[1] === 'function') {
-      callback = arguments[1];
-    } else if (isObjLiteral(arguments[1])) {
-      if (options) {
-        err = 'Invalid arguments: got options twice as first and second arguments';
-      } else {
-        options = arguments[1];
+    // Normalize option `from_line`
+    if(options.from_line === undefined || options.from_line === null){
+      options.from_line = 1;
+    }else{
+      if(typeof options.from_line === 'string' && /\d+/.test(options.from_line)){
+        options.from_line = parseInt(options.from_line);
       }
-    } else {
-      err = `Invalid first argument: ${JSON.stringify(arguments[1])}`;
-    }
-    if (err) {
-      if (!callback) {
-        throw Error(err);
-      } else {
-        return callback(Error(err));
+      if(Number.isInteger(options.from_line)){
+        if(options.from_line <= 0){
+          throw new Error(`Invalid Option: from_line must be a positive integer greater than 0, got ${JSON.stringify(opts.from_line)}`)
+        }
+      }else{
+        throw new Error(`Invalid Option: from_line must be an integer, got ${JSON.stringify(opts.from_line)}`)
       }
     }
-  } else if (arguments.length === 1) {
-    if (typeof arguments[0] === 'function') {
-      callback = arguments[0];
-    } else {
-      options = arguments[0];
+    // Normalize option `info`
+    if(options.info === undefined || options.info === null || options.info === false){
+      options.info = false;
+    }else if(options.info !== true){
+      throw new Error(`Invalid Option: info must be true, got ${JSON.stringify(options.info)}`)
     }
-  }
-  if (options == null) {
-    options = {};
-  }
-  parser = new Parser(options);
-  if (data != null) {
-    process.nextTick(function() {
-      parser.write(data);
-      return parser.end();
+    // Normalize option `max_record_size`
+    if(options.max_record_size === undefined || options.max_record_size === null || options.max_record_size === false){
+      options.max_record_size = 0;
+    }else if(Number.isInteger(options.max_record_size) && options.max_record_size >= 0);else if(typeof options.max_record_size === 'string' && /\d+/.test(options.max_record_size)){
+      options.max_record_size = parseInt(options.max_record_size);
+    }else{
+      throw new Error(`Invalid Option: max_record_size must be a positive integer, got ${JSON.stringify(options.max_record_size)}`)
+    }
+    // Normalize option `objname`
+    if(options.objname === undefined || options.objname === null || options.objname === false){
+      options.objname = undefined;
+    }else if(Buffer.isBuffer(options.objname)){
+      if(options.objname.length === 0){
+        throw new Error(`Invalid Option: objname must be a non empty buffer`)
+      }
+      options.objname = options.objname.toString();
+    }else if(typeof options.objname === 'string'){
+      if(options.objname.length === 0){
+        throw new Error(`Invalid Option: objname must be a non empty string`)
+      }
+      // Great, nothing to do
+    }else{
+      throw new Error(`Invalid Option: objname must be a string or a buffer, got ${options.objname}`)
+    }
+    // Normalize option `quote`
+    if(options.quote === null || options.quote === false || options.quote === ''){
+      options.quote = null;
+    }else{
+      if(options.quote === undefined || options.quote === true){
+        options.quote = Buffer.from('"');
+      }else if(typeof options.quote === 'string'){
+        options.quote = Buffer.from(options.quote);
+      }
+      if(!Buffer.isBuffer(options.quote)){
+        throw new Error(`Invalid Option: quote must be a buffer or a string, got ${JSON.stringify(options.quote)}`)
+      }else if(options.quote.length !== 1){
+        throw new Error(`Invalid Option Length: quote must be one character, got ${options.quote.length}`)
+      }else{
+        options.quote = options.quote[0];
+      }
+    }
+    // Normalize option `raw`
+    if(options.raw === undefined || options.raw === null || options.raw === false){
+      options.raw = false;
+    }else if(options.raw !== true){
+      throw new Error(`Invalid Option: raw must be true, got ${JSON.stringify(options.raw)}`)
+    }
+    // Normalize option `record_delimiter`
+    if(!options.record_delimiter){
+      options.record_delimiter = [];
+    }else if(!Array.isArray(options.record_delimiter)){
+      options.record_delimiter = [options.record_delimiter];
+    }
+    options.record_delimiter = options.record_delimiter.map( function(rd){
+      if(typeof rd === 'string'){
+        rd = Buffer.from(rd);
+      }
+      return rd
     });
+    // Normalize option `relax`
+    if(typeof options.relax === 'boolean');else if(options.relax === undefined || options.relax === null){
+      options.relax = false;
+    }else{
+      throw new Error(`Invalid Option: relax must be a boolean, got ${JSON.stringify(options.relax)}`)
+    }
+    // Normalize option `relax_column_count`
+    if(typeof options.relax_column_count === 'boolean');else if(options.relax_column_count === undefined || options.relax_column_count === null){
+      options.relax_column_count = false;
+    }else{
+      throw new Error(`Invalid Option: relax_column_count must be a boolean, got ${JSON.stringify(options.relax_column_count)}`)
+    }
+    // Normalize option `skip_empty_lines`
+    if(typeof options.skip_empty_lines === 'boolean');else if(options.skip_empty_lines === undefined || options.skip_empty_lines === null){
+      options.skip_empty_lines = false;
+    }else{
+      throw new Error(`Invalid Option: skip_empty_lines must be a boolean, got ${JSON.stringify(options.skip_empty_lines)}`)
+    }
+    // Normalize option `skip_lines_with_empty_values`
+    if(typeof options.skip_lines_with_empty_values === 'boolean');else if(options.skip_lines_with_empty_values === undefined || options.skip_lines_with_empty_values === null){
+      options.skip_lines_with_empty_values = false;
+    }else{
+      throw new Error(`Invalid Option: skip_lines_with_empty_values must be a boolean, got ${JSON.stringify(options.skip_lines_with_empty_values)}`)
+    }
+    // Normalize option `skip_lines_with_error`
+    if(typeof options.skip_lines_with_error === 'boolean');else if(options.skip_lines_with_error === undefined || options.skip_lines_with_error === null){
+      options.skip_lines_with_error = false;
+    }else{
+      throw new Error(`Invalid Option: skip_lines_with_error must be a boolean, got ${JSON.stringify(options.skip_lines_with_error)}`)
+    }
+    // Normalize option `rtrim`
+    if(options.rtrim === undefined || options.rtrim === null || options.rtrim === false){
+      options.rtrim = false;
+    }else if(options.rtrim !== true){
+      throw new Error(`Invalid Option: rtrim must be a boolean, got ${JSON.stringify(options.rtrim)}`)
+    }
+    // Normalize option `ltrim`
+    if(options.ltrim === undefined || options.ltrim === null || options.ltrim === false){
+      options.ltrim = false;
+    }else if(options.ltrim !== true){
+      throw new Error(`Invalid Option: ltrim must be a boolean, got ${JSON.stringify(options.ltrim)}`)
+    }
+    // Normalize option `trim`
+    if(options.trim === undefined || options.trim === null || options.trim === false){
+      options.trim = false;
+    }else if(options.trim !== true){
+      throw new Error(`Invalid Option: trim must be a boolean, got ${JSON.stringify(options.trim)}`)
+    }
+    // Normalize options `trim`, `ltrim` and `rtrim`
+    if(options.trim === true && opts.ltrim !== false){
+      options.ltrim = true;
+    }else if(options.ltrim !== true){
+      options.ltrim = false;
+    }
+    if(options.trim === true && opts.rtrim !== false){
+      options.rtrim = true;
+    }else if(options.rtrim !== true){
+      options.rtrim = false;
+    }
+    // Normalize option `to`
+    if(options.to === undefined || options.to === null){
+      options.to = -1;
+    }else{
+      if(typeof options.to === 'string' && /\d+/.test(options.to)){
+        options.to = parseInt(options.to);
+      }
+      if(Number.isInteger(options.to)){
+        if(options.to <= 0){
+          throw new Error(`Invalid Option: to must be a positive integer greater than 0, got ${JSON.stringify(opts.to)}`)
+        }
+      }else{
+        throw new Error(`Invalid Option: to must be an integer, got ${JSON.stringify(opts.to)}`)
+      }
+    }
+    // Normalize option `to_line`
+    if(options.to_line === undefined || options.to_line === null){
+      options.to_line = -1;
+    }else{
+      if(typeof options.to_line === 'string' && /\d+/.test(options.to_line)){
+        options.to_line = parseInt(options.to_line);
+      }
+      if(Number.isInteger(options.to_line)){
+        if(options.to_line <= 0){
+          throw new Error(`Invalid Option: to_line must be a positive integer greater than 0, got ${JSON.stringify(opts.to_line)}`)
+        }
+      }else{
+        throw new Error(`Invalid Option: to_line must be an integer, got ${JSON.stringify(opts.to_line)}`)
+      }
+    }
+    this.info = {
+      comment_lines: 0,
+      empty_lines: 0,
+      invalid_field_length: 0,
+      lines: 1,
+      records: 0
+    };
+    this.options = options;
+    this.state = {
+      bomSkipped: false,
+      castField: fnCastField,
+      commenting: false,
+      enabled: options.from_line === 1,
+      escaping: false,
+      escapeIsQuote: options.escape === options.quote,
+      expectedRecordLength: options.columns === null ? 0 : options.columns.length,
+      field: new ResizeableBuffer_1(20),
+      firstLineToHeaders: fnFirstLineToHeaders,
+      info: Object.assign({}, this.info),
+      previousBuf: undefined,
+      quoting: false,
+      stop: false,
+      rawBuffer: new ResizeableBuffer_1(100),
+      record: [],
+      recordHasError: false,
+      record_length: 0,
+      recordDelimiterMaxLength: options.record_delimiter.length === 0 ? 2 : Math.max(...options.record_delimiter.map( (v) => v.length)),
+      trimChars: [Buffer.from(' ')[0], Buffer.from('\t')[0]],
+      wasQuoting: false,
+      wasRowDelimiter: false
+    };
   }
-  if (callback) {
-    called = false;
-    chunks = options.objname ? {} : [];
-    parser.on('readable', function() {
-      var chunk, results;
-      results = [];
-      while (chunk = parser.read()) {
-        if (options.objname) {
-          results.push(chunks[chunk[0]] = chunk[1]);
-        } else {
-          results.push(chunks.push(chunk));
+  // Implementation of `Transform._transform`
+  _transform(buf, encoding, callback){
+    if(this.state.stop === true){
+      return
+    }
+    const err = this.__parse(buf, false);
+    if(err !== undefined){
+      this.state.stop = true;
+    }
+    callback(err);
+  }
+  // Implementation of `Transform._flush`
+  _flush(callback){
+    if(this.state.stop === true){
+      return
+    }
+    const err = this.__parse(undefined, true);
+    callback(err);
+  }
+  // Central parser implementation
+  __parse(nextBuf, end){
+    const {bom, comment, escape, from, from_line, info, ltrim, max_record_size, quote, raw, relax, rtrim, skip_empty_lines, to, to_line} = this.options;
+    let {record_delimiter} = this.options;
+    const {bomSkipped, previousBuf, rawBuffer, escapeIsQuote, trimChars} = this.state;
+    let buf;
+    if(previousBuf === undefined){
+      if(nextBuf === undefined){
+        // Handle empty string
+        this.push(null);
+        return
+      }else{
+        buf = nextBuf;
+      }
+    }else if(previousBuf !== undefined && nextBuf === undefined){
+      buf = previousBuf;
+    }else{
+      buf = Buffer.concat([previousBuf, nextBuf]);
+    }
+    // Handle UTF BOM
+    if(bomSkipped === false){
+      if(bom === false){
+        this.state.bomSkipped = true;
+      }else if(buf.length < 3){
+        // No enough data
+        if(end === false){
+          // Wait for more data
+          this.state.previousBuf = buf;
+          return
+        }
+        // skip BOM detect because data length < 3
+      }else{
+        if(bom_utf8.compare(buf, 0, 3) === 0){
+          // Skip BOM
+          buf = buf.slice(3);
+        }
+        this.state.bomSkipped = true;
+      }
+    }
+    const bufLen = buf.length;
+    let pos;
+    for(pos = 0; pos < bufLen; pos++){
+      // Ensure we get enough space to look ahead
+      // There should be a way to move this out of the loop
+      if(this.__needMoreData(pos, bufLen, end)){
+        break
+      }
+      if(this.state.wasRowDelimiter === true){
+        this.info.lines++;
+        if(info === true && this.state.record.length === 0 && this.state.field.length === 0 && this.state.wasQuoting === false){
+          this.state.info = Object.assign({}, this.info);
+        }
+        this.state.wasRowDelimiter = false;
+      }
+      if(to_line !== -1 && this.info.lines > to_line){
+        this.state.stop = true;
+        this.push(null);
+        return
+      }
+      // Auto discovery of record_delimiter, unix, mac and windows supported
+      if(this.state.quoting === false && record_delimiter.length === 0){
+        const record_delimiterCount = this.__autoDiscoverRowDelimiter(buf, pos);
+        if(record_delimiterCount){
+          record_delimiter = this.options.record_delimiter;
         }
       }
-      return results;
-    });
-    parser.on('error', function(err) {
-      called = true;
-      return callback(err);
-    });
-    parser.on('end', function() {
-      if (!called) {
-        return callback(null, chunks);
+      const chr = buf[pos];
+      if(raw === true){
+        rawBuffer.append(chr);
       }
-    });
-  }
-  return parser;
-};
-
-// ## `Parser([options])`
-
-// Options are documented [here](http://csv.adaltas.com/parse/).
-Parser = function(options = {}) {
-  var base, base1, base10, base11, base12, base13, base14, base15, base16, base17, base2, base3, base4, base5, base6, base7, base8, base9, k, v;
-  // @options = options
-  this.options = {};
-  for (k in options) {
-    v = options[k];
-    this.options[k] = v;
-  }
-  this.options.objectMode = true;
-  stream$1.Transform.call(this, this.options);
-  if ((base = this.options).rowDelimiter == null) {
-    base.rowDelimiter = null;
-  }
-  if (typeof this.options.rowDelimiter === 'string') {
-    this.options.rowDelimiter = [this.options.rowDelimiter];
-  }
-  if ((base1 = this.options).delimiter == null) {
-    base1.delimiter = ',';
-  }
-  if (this.options.quote !== void 0 && !this.options.quote) {
-    this.options.quote = '';
-  }
-  if ((base2 = this.options).quote == null) {
-    base2.quote = '"';
-  }
-  if ((base3 = this.options).escape == null) {
-    base3.escape = '"';
-  }
-  if ((base4 = this.options).columns == null) {
-    base4.columns = null;
-  }
-  if ((base5 = this.options).comment == null) {
-    base5.comment = '';
-  }
-  if ((base6 = this.options).objname == null) {
-    base6.objname = false;
-  }
-  if ((base7 = this.options).trim == null) {
-    base7.trim = false;
-  }
-  if ((base8 = this.options).ltrim == null) {
-    base8.ltrim = false;
-  }
-  if ((base9 = this.options).rtrim == null) {
-    base9.rtrim = false;
-  }
-  if (this.options.auto_parse != null) {
-    this.options.cast = this.options.auto_parse;
-  }
-  if ((base10 = this.options).cast == null) {
-    base10.cast = false;
-  }
-  if (this.options.auto_parse_date != null) {
-    this.options.cast_date = this.options.auto_parse_date;
-  }
-  if ((base11 = this.options).cast_date == null) {
-    base11.cast_date = false;
-  }
-  if (this.options.cast_date === true) {
-    this.options.cast_date = function(value) {
-      var m;
-      m = Date.parse(value);
-      if (!isNaN(m)) {
-        value = new Date(m);
+      if((chr === cr || chr === nl) && this.state.wasRowDelimiter === false ){
+        this.state.wasRowDelimiter = true;
       }
-      return value;
+      // Previous char was a valid escape char
+      // treat the current char as a regular char
+      if(this.state.escaping === true){
+        this.state.escaping = false;
+      }else{
+        // Escape is only active inside quoted fields
+        if(this.state.quoting === true && chr === escape && pos + 1 < bufLen){
+          // We are quoting, the char is an escape chr and there is a chr to escape
+          if(escapeIsQuote){
+            if(buf[pos+1] === quote){
+              this.state.escaping = true;
+              continue
+            }
+          }else{
+            this.state.escaping = true;
+            continue
+          }
+        }
+        // Not currently escaping and chr is a quote
+        // TODO: need to compare bytes instead of single char
+        if(this.state.commenting === false && chr === quote){
+          if(this.state.quoting === true){
+            const nextChr = buf[pos+1];
+            const isNextChrTrimable = rtrim && this.__isCharTrimable(nextChr);
+            // const isNextChrComment = nextChr === comment
+            const isNextChrComment = comment !== null && this.__compareBytes(comment, buf, pos+1, nextChr);
+            const isNextChrDelimiter = this.__isDelimiter(nextChr, buf, pos+1);
+            const isNextChrRowDelimiter = record_delimiter.length === 0 ? this.__autoDiscoverRowDelimiter(buf, pos+1) : this.__isRecordDelimiter(nextChr, buf, pos+1);
+            // Escape a quote
+            // Treat next char as a regular character
+            // TODO: need to compare bytes instead of single char
+            if(chr === escape && nextChr === quote){
+              pos++;
+            }else if(!nextChr || isNextChrDelimiter || isNextChrRowDelimiter || isNextChrComment || isNextChrTrimable){
+              this.state.quoting = false;
+              this.state.wasQuoting = true;
+              continue
+            }else if(relax === false){
+              const err = this.__error(`Invalid Closing Quote: got "${String.fromCharCode(nextChr)}" at line ${this.info.lines} instead of delimiter, row delimiter, trimable character (if activated) or comment`);
+              if(err !== undefined) return err
+            }else{
+              this.state.quoting = false;
+              this.state.wasQuoting = true;
+              // continue
+              this.state.field.prepend(quote);
+            }
+          }else{
+            if(this.state.field.length !== 0){
+              // In relax mode, treat opening quote preceded by chrs as regular
+              if( relax === false ){
+                const err = this.__error(`Invalid opening quote at line ${this.info.lines}`);
+                if(err !== undefined) return err
+              }
+            }else{
+              this.state.quoting = true;
+              continue
+            }
+          }
+        }
+        if(this.state.quoting === false){
+          let recordDelimiterLength = this.__isRecordDelimiter(chr, buf, pos);
+          if(recordDelimiterLength !== 0){
+            // Do not emit comments which take a full line
+            const skipCommentLine = this.state.commenting && (this.state.wasQuoting === false && this.state.record.length === 0 && this.state.field.length === 0);
+            if(skipCommentLine){
+              this.info.comment_lines++;
+              // Skip full comment line
+            }else{
+              // Skip if line is empty and skip_empty_lines activated
+              if(skip_empty_lines === true && this.state.wasQuoting === false && this.state.record.length === 0 && this.state.field.length === 0){
+                this.info.empty_lines++;
+                pos += recordDelimiterLength - 1;
+                continue
+              }
+              // Activate records emition if above from_line
+              if(this.state.enabled === false && this.info.lines + (this.state.wasRowDelimiter === true ? 1: 0 ) >= from_line){
+                this.state.enabled = true;
+                this.__resetField();
+                this.__resetRow();
+                pos += recordDelimiterLength - 1;
+                continue
+              }else{
+                const errField = this.__onField();
+                if(errField !== undefined) return errField
+                const errRecord = this.__onRow();
+                if(errRecord !== undefined) return errRecord
+              }
+              if(to !== -1 && this.info.records >= to){
+                this.state.stop = true;
+                this.push(null);
+                return
+              }
+            }
+            this.state.commenting = false;
+            pos += recordDelimiterLength - 1;
+            continue
+          }
+          if(this.state.commenting){
+            continue
+          }
+          const commentCount = comment === null ? 0 : this.__compareBytes(comment, buf, pos, chr);
+          if(commentCount !== 0){
+            this.state.commenting = true;
+            continue
+          }
+          let delimiterLength = this.__isDelimiter(chr, buf, pos);
+          if(delimiterLength !== 0){
+            const errField = this.__onField();
+            if(errField !== undefined) return errField
+            pos += delimiterLength - 1;
+            continue
+          }
+        }
+      }
+      if(this.state.commenting === false){
+        if(max_record_size !== 0 && this.state.record_length + this.state.field.length > max_record_size){
+          const err = this.__error(`Max Record Size: record exceed the maximum number of tolerated bytes of ${max_record_size} on line ${this.info.lines}`);
+          if(err !== undefined) return err
+        }
+      }
+
+      const lappend = ltrim === false || this.state.quoting === true || this.state.field.length !== 0 || !this.__isCharTrimable(chr);
+      // rtrim in non quoting is handle in __onField
+      const rappend = rtrim === false || this.state.wasQuoting === false;
+      if( lappend === true && rappend === true ){
+        this.state.field.append(chr);
+      }else if(rtrim === true && !this.__isCharTrimable(chr)){
+        const err = this.__error(`Invalid Closing Quote: found non trimable byte after quote at line ${this.info.lines}`);
+        if(err !== undefined) return err
+      }
+    }
+    if(end === true){
+      if(this.state.quoting === true){
+        const err = this.__error(`Invalid Closing Quote: quote is not closed at line ${this.info.lines}`);
+        if(err !== undefined) return err
+      }else{
+        // Skip last line if it has no characters
+        if(this.state.wasQuoting === true || this.state.record.length !== 0 || this.state.field.length !== 0){
+          const errField = this.__onField();
+          if(errField !== undefined) return errField
+          const errRecord = this.__onRow();
+          if(errRecord !== undefined) return errRecord
+        }else if(this.state.wasRowDelimiter === true){
+          this.info.empty_lines++;
+        }else if(this.state.commenting === true){
+          this.info.comment_lines++;
+        }
+      }
+    }else{
+      this.state.previousBuf = buf.slice(pos);
+    }
+    if(this.state.wasRowDelimiter === true){
+      this.info.lines++;
+      this.state.wasRowDelimiter = false;
+    }
+  }
+  // Helper to test if a character is a space or a line delimiter
+  __isCharTrimable(chr){
+    return chr === space || chr === tab || chr === cr || chr === nl
+  }
+  __onRow(){
+    const {columns, info, from, relax_column_count, raw, skip_lines_with_empty_values} = this.options;
+    const {enabled, record} = this.state;
+    // Convert the first line into column names
+    if(columns === true){
+      return this.__firstLineToColumns(record)
+    }
+    const recordLength = record.length;
+    if(columns === false && this.info.records === 0){
+      this.state.expectedRecordLength = recordLength;
+    }else if(enabled === true){
+      if(recordLength !== this.state.expectedRecordLength){
+        if(relax_column_count === true){
+          this.info.invalid_field_length++;
+        }else{
+          if(columns === false){
+            const err = this.__error(`Invalid Record Length: expect ${this.state.expectedRecordLength}, got ${recordLength} on line ${this.info.lines}`);
+            if(err !== undefined) return err
+          }else{
+            const err = this.__error(`Invalid Record Length: header length is ${columns.length}, got ${recordLength} on line ${this.info.lines}`);
+            if(err !== undefined) return err
+          }
+        }
+      }
+    }
+    if(enabled === false){
+      return this.__resetRow()
+    }
+    if(skip_lines_with_empty_values === true){
+      if(record.map( (field) => field.trim() ).join('') === ''){
+        this.__resetRow();
+        return
+      }
+    }
+    if(this.state.recordHasError === true){
+      this.__resetRow();
+      this.state.recordHasError = false;
+      return
+    }
+    this.info.records++;
+    if(from === 1 || this.info.records >= from){
+      if(columns !== false){
+        const obj = {};
+        // Transform record array to an object
+        for(let i in record){
+          if(columns[i] === undefined || columns[i].disabled) continue
+          obj[columns[i].name] = record[i];
+        }
+        const {objname} = this.options;
+        if(objname === undefined){
+          if(raw === true || info === true){
+            this.push(Object.assign(
+              {record: obj},
+              (raw === true ? {raw: this.state.rawBuffer.toString()}: {}),
+              (info === true ? {info: this.state.info}: {})
+            ));
+          }else{
+            this.push(obj);
+          }
+        }else{
+          if(raw === true || info === true){
+            this.push(Object.assign(
+              {record: [obj[objname], obj]},
+              raw === true ? {raw: this.state.rawBuffer.toString()}: {},
+              info === true ? {info: this.state.info}: {}
+            ));
+          }else{
+            this.push([obj[objname], obj]);
+          }
+        }
+      }else{
+        if(raw === true || info === true){
+          this.push(Object.assign(
+            {record: record},
+            raw === true ? {raw: this.state.rawBuffer.toString()}: {},
+            info === true ? {info: this.state.info}: {}
+          ));
+        }else{
+          this.push(record);
+        }
+      }
+    }
+    this.__resetRow();
+  }
+  __firstLineToColumns(record){
+    const {firstLineToHeaders} = this.state;
+    try{
+      // record = record.filter(function(field){ return field !== undefined})
+      const headers = firstLineToHeaders === undefined ? record : firstLineToHeaders.call(null, record);
+      if(!Array.isArray(headers)){
+        return this.__error(`Invalid Header Mapping: expect an array, got ${JSON.stringify(headers)}`)
+      }
+      const normalizedHeaders = normalizeColumnsArray(headers);
+      this.state.expectedRecordLength = normalizedHeaders.length;
+      this.options.columns = normalizedHeaders;
+      this.__resetRow();
+      return
+    }catch(err){
+      return err
+    }
+  }
+  __resetRow(){
+    const {info} = this.options;
+    if(this.options.raw === true){
+      this.state.rawBuffer.reset();
+    }
+    this.state.record = [];
+    this.state.record_length = 0;
+  }
+  __onField(){
+    const {cast, rtrim, max_record_size} = this.options;
+    const {enabled, wasQuoting} = this.state;
+    // Deal with from_to options
+    if(this.options.columns !== true && enabled === false){
+      return this.__resetField()
+    }
+    let field = this.state.field.toString();
+    if(rtrim === true && wasQuoting === false){
+      field = field.trimRight();
+    }
+    if(cast === true){
+      const [err, f] = this.__cast(field);
+      if(err !== undefined) return err
+      field = f;
+    }
+    this.state.record.push(field);
+    // Increment record length if record size must not exceed a limit
+    if(max_record_size !== 0 && typeof field === 'string'){
+      this.state.record_length += field.length;
+    }
+    this.__resetField();
+  }
+  __resetField(){
+    this.state.field.reset();
+    this.state.wasQuoting = false;
+  }
+  // Return a tuple with the error and the casted value
+  __cast(field){
+    const isColumns = Array.isArray(this.options.columns);
+    // Dont loose time calling cast if the field wont be part of the final record
+    if( isColumns === true && this.options.columns.length <= this.state.record.length ){
+      return [undefined, undefined]
+    }
+    const context = {
+      column: isColumns === true ?
+        this.options.columns[this.state.record.length].name :
+        this.state.record.length,
+      empty_lines: this.info.empty_lines,
+      header: this.options.columns === true,
+      index: this.state.record.length,
+      invalid_field_length: this.info.invalid_field_length,
+      quoting: this.state.wasQuoting,
+      lines: this.info.lines,
+      records: this.info.records
     };
-  }
-  if ((base12 = this.options).relax == null) {
-    base12.relax = false;
-  }
-  if ((base13 = this.options).relax_column_count == null) {
-    base13.relax_column_count = false;
-  }
-  if ((base14 = this.options).skip_empty_lines == null) {
-    base14.skip_empty_lines = false;
-  }
-  if ((base15 = this.options).max_limit_on_data_read == null) {
-    base15.max_limit_on_data_read = 128000;
-  }
-  if ((base16 = this.options).skip_lines_with_empty_values == null) {
-    base16.skip_lines_with_empty_values = false;
-  }
-  if ((base17 = this.options).skip_lines_with_error == null) {
-    base17.skip_lines_with_error = false;
-  }
-  // Counters
-  // lines = count + skipped_line_count + empty_line_count
-  this.lines = 0; // Number of lines encountered in the source dataset
-  this.count = 0; // Number of records being processed
-  this.skipped_line_count = 0; // Number of records skipped due to errors
-  this.empty_line_count = 0; // Number of empty lines
-  // Constants
-  this.is_int = /^(\-|\+)?([1-9]+[0-9]*)$/;
-  // @is_float = /^(\-|\+)?([0-9]+(\.[0-9]+)([eE][0-9]+)?|Infinity)$/
-  // @is_float = /^(\-|\+)?((([0-9])|([1-9]+[0-9]*))(\.[0-9]+)([eE][0-9]+)?|Infinity)$/
-  this.is_float = function(value) {
-    return (value - parseFloat(value) + 1) >= 0; // Borrowed from jquery
-  };
-  // Internal state
-  this._ = {
-    decoder: new StringDecoder$1(),
-    quoting: false,
-    commenting: false,
-    field: null,
-    nextChar: null,
-    closingQuote: 0,
-    line: [],
-    chunks: [],
-    rawBuf: '',
-    buf: '',
-    rowDelimiterLength: this.options.rowDelimiter ? Math.max(...this.options.rowDelimiter.map(function(v) {
-      return v.length;
-    })) : void 0,
-    lineHasError: false
-  };
-  return this;
-};
-
-// ## Internal API
-
-// The Parser implement a [`stream.Transform` class][transform].
-
-// ### Events
-
-// The library extends Node [EventEmitter][event] class and emit all
-// the events of the Writable and Readable [Stream API][stream]. 
-util$1.inherits(Parser, stream$1.Transform);
-
-// For extra flexibility, you can get access to the original Parser
-// class: `require('csv-parse').Parser`.
-var Parser_1 = Parser;
-
-// ### `_transform(chunk, encoding, callback)`
-
-// *   `chunk` Buffer | String   
-//     The chunk to be transformed. Will always be a buffer unless the decodeStrings option was set to false.
-// *   `encoding` String   
-//     If the chunk is a string, then this is the encoding type. (Ignore if decodeStrings chunk is a buffer.)
-// *   `callback` Function   
-//     Call this function (optionally with an error argument) when you are done processing the supplied chunk.
-
-// Implementation of the [`stream.Transform` API][transform]
-Parser.prototype._transform = function(chunk, encoding, callback) {
-  return setImmediate(() => {
-    var err;
-    if (chunk instanceof Buffer) {
-      chunk = this._.decoder.write(chunk);
-    }
-    err = this.__write(chunk, false);
-    if (err) {
-      return this.emit('error', err);
-    }
-    return callback();
-  });
-};
-
-Parser.prototype._flush = function(callback) {
-  return callback(this.__flush());
-};
-
-Parser.prototype.__flush = function() {
-  var err;
-  err = this.__write(this._.decoder.end(), true);
-  if (err) {
-    return err;
-  }
-  if (this._.quoting) {
-    err = this.error(`Quoted field not terminated at line ${this.lines + 1}`);
-    return err;
-  }
-  if (this._.line.length > 0) {
-    return this.__push(this._.line);
-  }
-};
-
-Parser.prototype.__push = function(line) {
-  var call_column_udf, columns, err, field, i, j, len, lineAsColumns, record;
-  if (this.options.skip_lines_with_empty_values && line.join('').trim() === '') {
-    return;
-  }
-  record = null;
-  if (this.options.columns === true) {
-    this.options.columns = line;
-    return;
-  } else if (typeof this.options.columns === 'function') {
-    call_column_udf = function(fn, line) {
-      var columns, err;
-      try {
-        columns = fn.call(null, line);
-        return [null, columns];
-      } catch (error) {
-        err = error;
-        return [err];
+    if(this.state.castField !== null){
+      try{
+        return [undefined, this.state.castField.call(null, field, context)]
+      }catch(err){
+        return [err]
       }
-    };
-    [err, columns] = call_column_udf(this.options.columns, line);
-    if (err) {
-      return err;
     }
-    this.options.columns = columns;
-    return;
+    if(this.__isFloat(field)){
+      return [undefined, parseFloat(field)]
+    }else if(this.options.cast_date !== false){
+      return [undefined, this.options.cast_date.call(null, field, context)]
+    }
+    return [undefined, field]
   }
-  if (!this._.line_length && line.length > 0) {
-    this._.line_length = this.options.columns ? this.options.columns.length : line.length;
+  // Keep it in case we implement the `cast_int` option
+  // __isInt(value){
+  //   // return Number.isInteger(parseInt(value))
+  //   // return !isNaN( parseInt( obj ) );
+  //   return /^(\-|\+)?[1-9][0-9]*$/.test(value)
+  // }
+  __isFloat(value){
+    return (value - parseFloat( value ) + 1) >= 0 // Borrowed from jquery
   }
-  // Dont check column count on empty lines
-  if (line.length === 1 && line[0] === '') {
-    this.empty_line_count++;
-  } else if (line.length !== this._.line_length) {
-    // Dont check column count with relax_column_count
-    if (this.options.relax_column_count) {
-      this.count++;
-      this.skipped_line_count++;
-    } else if (this.options.columns != null) {
-      // Suggest: Inconsistent header and column numbers: header is 1 and number of columns is 1 on line 1
-      err = this.error(`Number of columns on line ${this.lines} does not match header`);
-      return err;
-    } else {
-      err = this.error(`Number of columns is inconsistent on line ${this.lines}`);
-      return err;
+  __compareBytes(sourceBuf, targetBuf, pos, firtByte){
+    if(sourceBuf[0] !== firtByte) return 0
+    const sourceLength = sourceBuf.length;
+    for(let i = 1; i < sourceLength; i++){
+      if(sourceBuf[i] !== targetBuf[pos+i]) return 0
     }
-  } else {
-    this.count++;
+    return sourceLength
   }
-  if (this.options.columns != null) {
-    lineAsColumns = {};
-    for (i = j = 0, len = line.length; j < len; i = ++j) {
-      field = line[i];
-      if (this.options.columns[i] === false) {
-        continue;
-      }
-      lineAsColumns[this.options.columns[i]] = field;
+  __needMoreData(i, bufLen, end){
+    if(end){
+      return false
     }
-    if (this.options.objname) {
-      record = [lineAsColumns[this.options.objname], lineAsColumns];
-    } else {
-      record = lineAsColumns;
-    }
-  } else {
-    record = line;
-  }
-  if (this.count < this.options.from) {
-    return;
-  }
-  if (this.count > this.options.to) {
-    return;
-  }
-  if (this.options.raw) {
-    this.push({
-      raw: this._.rawBuf,
-      row: record
-    });
-    this._.rawBuf = '';
-  } else {
-    this.push(record);
-  }
-  if (this.listenerCount('record')) {
-    this.emit('record', record);
-  }
-  return null;
-};
-
-Parser.prototype.__write = function(chars, end) {
-  var areNextCharsDelimiter, areNextCharsRowDelimiters, cast, char, err, escapeIsQuote, i, isDelimiter, isEscape, isNextCharAComment, isNextCharTrimable, isQuote, isRowDelimiter, isRowDelimiterLength, is_float, is_int, l, ltrim, nextCharPos, ref, ref1, ref2, ref3, ref4, ref5, ref6, remainingBuffer, rowDelimiter, rtrim, wasCommenting;
-  is_int = (value) => {
-    if (typeof this.is_int === 'function') {
-      return this.is_int(value);
-    } else {
-      return this.is_int.test(value);
-    }
-  };
-  is_float = (value) => {
-    if (typeof this.is_float === 'function') {
-      return this.is_float(value);
-    } else {
-      return this.is_float.test(value);
-    }
-  };
-  cast = (value, context = {}) => {
-    if (!this.options.cast) {
-      return value;
-    }
-    if (context.quoting == null) {
-      context.quoting = !!this._.closingQuote;
-    }
-    if (context.lines == null) {
-      context.lines = this.lines;
-    }
-    if (context.count == null) {
-      context.count = this.count;
-    }
-    if (context.index == null) {
-      context.index = this._.line.length;
-    }
-    // context.header ?= if @options.column and @lines is 1 and @count is 0 then true else false
-    if (context.header == null) {
-      context.header = this.options.columns === true;
-    }
-    if (context.column == null) {
-      context.column = Array.isArray(this.options.columns) ? this.options.columns[context.index] : context.index;
-    }
-    if (typeof this.options.cast === 'function') {
-      return this.options.cast(value, context);
-    }
-    if (is_int(value)) {
-      value = parseInt(value);
-    } else if (is_float(value)) {
-      value = parseFloat(value);
-    } else if (this.options.cast_date) {
-      value = this.options.cast_date(value, context);
-    }
-    return value;
-  };
-  ltrim = this.options.trim || this.options.ltrim;
-  rtrim = this.options.trim || this.options.rtrim;
-  chars = this._.buf + chars;
-  l = chars.length;
-  i = 0;
-  if (this.lines === 0 && 0xFEFF === chars.charCodeAt(0)) {
-    // Strip BOM header
-    i++;
-  }
-  while (i < l) {
-    // Ensure we get enough space to look ahead
-    if (!end) {
-      remainingBuffer = chars.substr(i, l - i);
-      // (i+1000 >= l) or
-      // Skip if the remaining buffer can be comment
-      // Skip if the remaining buffer can be row delimiter
-      if ((!this.options.rowDelimiter && i + 3 > l) || (!this._.commenting && l - i < this.options.comment.length && this.options.comment.substr(0, l - i) === remainingBuffer) || (this.options.rowDelimiter && l - i < this._.rowDelimiterLength && this.options.rowDelimiter.some(function(rd) {
-        return rd.substr(0, l - i) === remainingBuffer;
+    const {comment, delimiter, escape} = this.options;
+    const {quoting, recordDelimiterMaxLength} = this.state;
+    const numOfCharLeft = bufLen - i - 1;
+    const requiredLength = Math.max(
+      // Skip if the remaining buffer smaller than comment
+      comment ? comment.length : 0,
+      // Skip if the remaining buffer smaller than row delimiter
+      recordDelimiterMaxLength,
       // Skip if the remaining buffer can be row delimiter following the closing quote
-      })) || (this.options.rowDelimiter && this._.quoting && l - i < (this.options.quote.length + this._.rowDelimiterLength) && this.options.rowDelimiter.some((rd) => {
-        return (this.options.quote + rd).substr(0, l - i) === remainingBuffer;
+      // 1 is for quote.length
+      quoting ? (1 + recordDelimiterMaxLength) : 0,
       // Skip if the remaining buffer can be delimiter
+      delimiter.length,
       // Skip if the remaining buffer can be escape sequence
-      })) || (l - i <= this.options.delimiter.length && this.options.delimiter.substr(0, l - i) === remainingBuffer) || (l - i <= this.options.escape.length && this.options.escape.substr(0, l - i) === remainingBuffer)) {
-        break;
-      }
-    }
-    char = this._.nextChar ? this._.nextChar : chars.charAt(i);
-    this._.nextChar = l > i + 1 ? chars.charAt(i + 1) : null;
-    if (this.options.raw) {
-      this._.rawBuf += char;
-    }
-    // Auto discovery of rowDelimiter, unix, mac and windows supported
-    if (this.options.rowDelimiter == null) {
-      nextCharPos = i;
-      rowDelimiter = null;
-      // First empty line
-      if (!this._.quoting && (char === '\n' || char === '\r')) {
-        rowDelimiter = char;
-        nextCharPos += 1;
-      } else if (this._.quoting && char === this.options.quote && ((ref = this._.nextChar) === '\n' || ref === '\r')) {
-        rowDelimiter = this._.nextChar;
-        nextCharPos += 2;
-      }
-      if (rowDelimiter) {
-        if (rowDelimiter === '\r' && chars.charAt(nextCharPos) === '\n') {
-          rowDelimiter += '\n';
-        }
-        this.options.rowDelimiter = [rowDelimiter];
-        this._.rowDelimiterLength = rowDelimiter.length;
-      }
-    }
-    // Parse that damn char
-    // Note, shouldn't we have sth like chars.substr(i, @options.escape.length)
-    if (!this._.commenting && char === this.options.escape) {
-      // Make sure the escape is really here for escaping:
-      // If escape is same as quote, and escape is first char of a field 
-      // and it's not quoted, then it is a quote
-      // Next char should be an escape or a quote
-      escapeIsQuote = this.options.escape === this.options.quote;
-      isEscape = this._.nextChar === this.options.escape;
-      isQuote = this._.nextChar === this.options.quote;
-      if (!(escapeIsQuote && !this._.field && !this._.quoting) && (isEscape || isQuote)) {
-        i++;
-        char = this._.nextChar;
-        this._.nextChar = chars.charAt(i + 1);
-        if (this._.field == null) {
-          this._.field = '';
-        }
-        this._.field += char;
-        // Since we're skipping the next one, better add it now if in raw mode.
-        if (this.options.raw) {
-          this._.rawBuf += char;
-        }
-        i++;
-        continue;
-      }
-    }
-    // Char match quote
-    if (!this._.commenting && char === this.options.quote) {
-      if (this._.acceptOnlyEmptyChars && (char !== ' ' && char !== '\t')) {
-        return this.error('Only trimable characters are accepted after quotes');
-      }
-      if (this._.quoting) {
-        // Make sure a closing quote is followed by a delimiter
-        // If we have a next character and 
-        // it isnt a rowDelimiter and 
-        // it isnt an column delimiter and
-        // it isnt the begining of a comment
-        // Otherwise, if this is not "relax" mode, throw an error
-        isNextCharTrimable = rtrim && ((ref1 = this._.nextChar) === ' ' || ref1 === '\t');
-        areNextCharsRowDelimiters = this.options.rowDelimiter && this.options.rowDelimiter.some(function(rd) {
-          return chars.substr(i + 1, rd.length) === rd;
-        });
-        areNextCharsDelimiter = chars.substr(i + 1, this.options.delimiter.length) === this.options.delimiter;
-        isNextCharAComment = this._.nextChar === this.options.comment;
-        if ((this._.nextChar != null) && !isNextCharTrimable && !areNextCharsRowDelimiters && !areNextCharsDelimiter && !isNextCharAComment) {
-          if (this.options.relax) {
-            this._.quoting = false;
-            if (this._.field) {
-              this._.field = `${this.options.quote}${this._.field}`;
-            }
-          } else {
-            if (err = this.error(`Invalid closing quote at line ${this.lines + 1}; found ${JSON.stringify(this._.nextChar)} instead of delimiter ${JSON.stringify(this.options.delimiter)}`)) {
-              return err;
-            }
-          }
-        } else if ((this._.nextChar != null) && isNextCharTrimable) {
-          i++;
-          this._.quoting = false;
-          this._.closingQuote = this.options.quote.length;
-          this._.acceptOnlyEmptyChars = true;
-          continue;
-        } else {
-          i++;
-          this._.quoting = false;
-          this._.closingQuote = this.options.quote.length;
-          if (end && i === l) {
-            this._.line.push(cast(this._.field || ''));
-            this._.field = null;
-          }
-          continue;
-        }
-      } else if (!this._.field) {
-        this._.quoting = true;
-        i++;
-        continue;
-      } else if ((this._.field != null) && !this.options.relax) {
-        if (err = this.error(`Invalid opening quote at line ${this.lines + 1}`)) {
-          return err;
-        }
-      }
-    }
-    // Otherwise, treat quote as a regular character
-    isRowDelimiter = this.options.rowDelimiter && this.options.rowDelimiter.some(function(rd) {
-      return chars.substr(i, rd.length) === rd;
-    });
-    if (isRowDelimiter || (end && i === l - 1)) {
-      this.lines++;
-    }
-    // Set the commenting flag
-    wasCommenting = false;
-    if (!this._.commenting && !this._.quoting && this.options.comment && chars.substr(i, this.options.comment.length) === this.options.comment) {
-      this._.commenting = true;
-    } else if (this._.commenting && isRowDelimiter) {
-      wasCommenting = true;
-      this._.commenting = false;
-    }
-    isDelimiter = chars.substr(i, this.options.delimiter.length) === this.options.delimiter;
-    if (this._.acceptOnlyEmptyChars) {
-      if (isDelimiter || isRowDelimiter) {
-        this._.acceptOnlyEmptyChars = false;
-      } else {
-        if (char === ' ' || char === '\t') {
-          i++;
-          continue;
-        } else {
-          return this.error('Only trimable characters are accepted after quotes');
-        }
-      }
-    }
-    if (!this._.commenting && !this._.quoting && (isDelimiter || isRowDelimiter)) {
-      if (isRowDelimiter) {
-        isRowDelimiterLength = this.options.rowDelimiter.filter(function(rd) {
-          return chars.substr(i, rd.length) === rd;
-        })[0].length;
-      }
-      // Empty lines
-      if (isRowDelimiter && this._.line.length === 0 && (this._.field == null)) {
-        if (wasCommenting || this.options.skip_empty_lines) {
-          i += isRowDelimiterLength;
-          this._.nextChar = chars.charAt(i);
-          continue;
-        }
-      }
-      if (rtrim) {
-        if (!this._.closingQuote) {
-          this._.field = (ref2 = this._.field) != null ? ref2.trimRight() : void 0;
-        }
-      }
-      this._.line.push(cast(this._.field || ''));
-      this._.closingQuote = 0;
-      this._.field = null;
-      if (isDelimiter) { // End of field
-        i += this.options.delimiter.length;
-        this._.nextChar = chars.charAt(i);
-        if (end && !this._.nextChar) {
-          isRowDelimiter = true;
-          this._.line.push('');
-        }
-      }
-      if (isRowDelimiter) { // End of record
-        if (!this._.lineHasError) {
-          err = this.__push(this._.line);
-          if (err) {
-            return err;
-          }
-        }
-        if (this._.lineHasError) {
-          this._.lineHasError = false;
-        }
-        // Some cleanup for the next record
-        this._.line = [];
-        i += isRowDelimiterLength;
-        this._.nextChar = chars.charAt(i);
-        continue;
-      }
-    } else if (!this._.commenting && !this._.quoting && (char === ' ' || char === '\t')) {
-      if (this._.field == null) {
-        // Left trim unless we are quoting or field already filled
-        this._.field = '';
-      }
-      if (!(ltrim && !this._.field)) {
-        this._.field += char;
-      }
-      i++;
-    } else if (!this._.commenting) {
-      if (this._.field == null) {
-        this._.field = '';
-      }
-      this._.field += char;
-      i++;
-    } else {
-      i++;
-    }
-    if (!this._.commenting && ((ref3 = this._.field) != null ? ref3.length : void 0) > this.options.max_limit_on_data_read) {
-      return Error(`Field exceeds max_limit_on_data_read setting (${this.options.max_limit_on_data_read}) ${JSON.stringify(this.options.delimiter)}`);
-    }
-    if (!this._.commenting && ((ref4 = this._.line) != null ? ref4.length : void 0) > this.options.max_limit_on_data_read) {
-      return Error(`Row delimiter not found in the file ${JSON.stringify(this.options.rowDelimiter)}`);
-    }
+      // 1 is for escape.length
+      1
+    );
+    return numOfCharLeft < requiredLength
   }
-  // Flush remaining fields and lines
-  if (end) {
-    if (l === 0) {
-      this.lines++;
+  __isDelimiter(chr, buf, pos){
+    const {delimiter} = this.options;
+    const delLength = delimiter.length;
+    if(delimiter[0] !== chr) return 0
+    for(let i = 1; i < delLength; i++){
+      if(delimiter[i] !== buf[pos+i]) return 0
     }
-    if (this._.field != null) {
-      if (rtrim) {
-        if (!this._.closingQuote) {
-          this._.field = (ref5 = this._.field) != null ? ref5.trimRight() : void 0;
+    return delimiter.length
+  }
+  __isRecordDelimiter(chr, buf, pos){
+    const {record_delimiter} = this.options;
+    const recordDelimiterLength = record_delimiter.length;
+    loop1: for(let i = 0; i < recordDelimiterLength; i++){
+      const rd = record_delimiter[i];
+      const rdLength = rd.length;
+      if(rd[0] !== chr){
+        continue
+      }
+      for(let j = 1; j < rdLength; j++){
+        if(rd[j] !== buf[pos+j]){
+          continue loop1
         }
       }
-      this._.line.push(cast(this._.field || ''));
-      this._.field = null;
+      return rd.length
     }
-    if (((ref6 = this._.field) != null ? ref6.length : void 0) > this.options.max_limit_on_data_read) {
-      return Error(`Delimiter not found in the file ${JSON.stringify(this.options.delimiter)}`);
-    }
-    if (this._.line.length > this.options.max_limit_on_data_read) {
-      return Error(`Row delimiter not found in the file ${JSON.stringify(this.options.rowDelimiter)}`);
-    }
+    return 0
   }
-  // Store un-parsed chars for next call
-  this._.buf = chars.substr(i);
-  return null;
-};
-
-Parser.prototype.error = function(msg) {
-  var err;
-  err = Error(msg);
-  if (!this.options.skip_lines_with_error) {
-    return err;
-  } else {
-    if (!this._.lineHasError) {
-      this._.lineHasError = true;
+  __autoDiscoverRowDelimiter(buf, pos){
+    const chr = buf[pos];
+    if(chr === cr){
+      if(buf[pos+1] === nl){
+        this.options.record_delimiter.push(Buffer.from('\r\n'));
+        this.state.recordDelimiterMaxLength = 2;
+        return 2
+      }else{
+        this.options.record_delimiter.push(Buffer.from('\r'));
+        this.state.recordDelimiterMaxLength = 1;
+        return 1
+      }
+    }else if(chr === nl){
+      this.options.record_delimiter.push(Buffer.from('\n'));
+      this.state.recordDelimiterMaxLength = 1;
+      return 1
+    }
+    return 0
+  }
+  __error(msg){
+    const {skip_lines_with_error} = this.options;
+    const err = new Error(msg);
+    if(skip_lines_with_error){
+      this.state.recordHasError = true;
       this.emit('skip', err);
+      return undefined
+    }else{
+      return err
     }
   }
-  return null;
-};
+}
 
-// ## Utils
-isObjLiteral = function(_obj) {
-  var _test;
-  _test = _obj;
-  if (typeof _obj !== 'object' || _obj === null || Array.isArray(_obj)) {
-    return false;
-  } else {
-    return (function() {
-      while (!false) {
-        if (Object.getPrototypeOf(_test = Object.getPrototypeOf(_test)) === null) {
-          break;
+const parse = function(){
+  let data, options, callback;
+  for(let i in arguments){
+    const argument = arguments[i];
+    const type = typeof argument;
+    if(data === undefined && (typeof argument === 'string' || Buffer.isBuffer(argument))){
+      data = argument;
+    }else if(options === undefined && isObject(argument)){
+      options = argument;
+    }else if(callback === undefined && type === 'function'){
+      callback = argument;
+    }else{
+      throw new Error(`Invalid argument: got ${JSON.stringify(argument)} at index ${i}`)
+    }
+  }
+  const parser = new Parser(options);
+  if(callback){
+    const records = options === undefined || options.objname === undefined ? [] : {};
+    parser.on('readable', function(){
+      let record;
+      while(record = this.read()){
+        if(options === undefined || options.objname === undefined){
+          records.push(record);
+        }else{
+          records[record[0]] = record[1];
         }
       }
-      return Object.getPrototypeOf(_obj === _test);
-    })();
+    });
+    parser.on('error', function(err){
+      callback(err, undefined, parser.info);
+    });
+    parser.on('end', function(){
+      callback(undefined, records, parser.info);
+    });
   }
+  if(data !== undefined){
+    parser.write(data);
+    parser.end();
+  }
+  return parser
 };
-lib.Parser = Parser_1;
+
+parse.Parser = Parser;
+
+var lib = parse;
+
+const underscore = function(str){
+  return str.replace(/([A-Z])/g, function(_, match, index){
+    return '_' + match.toLowerCase()
+  })
+};
+
+const isObject = function(obj){
+  return (typeof obj === 'object' && obj !== null && !Array.isArray(obj))
+};
+
+const normalizeColumnsArray = function(columns){
+  // console.log('columns', columns)
+  const normalizedColumns = [];
+
+  for(let i=0; i< columns.length; i++){
+    const column = columns[i];
+    if(column === undefined || column === null || column === false){
+      normalizedColumns[i] = { disabled: true };
+    }else if(typeof column === 'string'){
+      normalizedColumns[i] = { name: column };
+    }else if(isObject(column)){
+      if(typeof column.name !== 'string'){
+        throw new Error(`Invalid Option columns: property "name" is required at position ${i} when column is an object literal`)
+      }
+      normalizedColumns[i] = column;
+    }else{
+      throw new Error(`Invalid Option columns: expect a string or an object, got ${JSON.stringify(column)} at position ${i}`)
+    }
+  }
+  // console.log(normalizedColumns)
+  return normalizedColumns;
+};
 
 const INT_FIELDS = new Set([
     FlightLogHeader.AircraftBatteryCell1Voltage,

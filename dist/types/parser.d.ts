@@ -1,7 +1,7 @@
 import { FlightLog, FlightLogEvent } from './types';
-export declare type Subscriber<T> = (value: T) => void;
-export declare type ErrorSubscriber = (value: any) => void;
-export declare type CompletionSubscriber = () => void;
+export type Subscriber<T> = (value: T) => void;
+export type ErrorSubscriber = (value: any) => void;
+export type CompletionSubscriber = () => void;
 export interface QuasiObservable<T> {
     subscribe(sub: Subscriber<T>, errSub?: ErrorSubscriber, completionSub?: CompletionSubscriber): void;
     toPromise(): Promise<T>;

@@ -1,8 +1,6 @@
-import { promisify } from "util";
-import fs from "fs";
-import path from "path";
-
-const readFileAsync = promisify(fs.readFile);
+const path = require('path');
+const readFileAsync = require('fs').promises.readFile;
+// Maybe we can read all files from one folder?
 
 const ipadFilePath = path.join(__dirname, '/../../testlog/ipad-ios11-phantom4.log');
 const ipadMinimalFilePath = path.join(__dirname, '/../../testlog/ipad-ios11-phantom4-minimal.log');

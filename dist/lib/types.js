@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.FLIGHT_MODE_MAPPING = exports.FlightLogHeader = void 0;
 var FlightLogHeader;
 (function (FlightLogHeader) {
     FlightLogHeader["DateTime"] = "Date/Time (UTC)";

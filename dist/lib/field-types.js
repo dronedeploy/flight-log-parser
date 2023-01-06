@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.DATE_FIELDS = exports.BOOL_FIELDS = exports.FLOAT_FIELDS = exports.INT_FIELDS = void 0;
 const types_1 = require("./types");
 exports.INT_FIELDS = new Set([
     types_1.FlightLogHeader.AircraftBatteryCell1Voltage,

@@ -1,13 +1,11 @@
 import 'jest';
-import path from 'path';
-import fs from 'fs';
-import { promisify } from 'util';
+
 import {fromUtcDateStr, parseLog} from '../parser';
 import { FlightLogHeader } from '../types';
 
-const readFileAsync = promisify(fs.readFile);
+const path = require('path');
+const readFileAsync = require('fs').promises.readFile;
 
-// Maybe we can read all files from one folder?
 const androidFilePath = path.join(__dirname, '/../../testlog/pixel2-inspire2.log');
 
 describe('test parse android logs', () => {

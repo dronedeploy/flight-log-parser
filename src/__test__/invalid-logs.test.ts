@@ -1,10 +1,10 @@
 import 'jest';
-import path from 'path';
-import fs from 'fs';
 
 import { parseLog } from '../parser';
 import { FlightLog } from '../types';
 
+const path = require('path');
+const fs = require('fs');
 const truncatedLog = path.join(__dirname, '/../../testlog/truncated.log');
 
 describe('test parsing troublesome logs', () => {

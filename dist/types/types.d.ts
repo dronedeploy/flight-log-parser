@@ -132,12 +132,12 @@ export declare enum FlightLogHeader {
     CompassStateLastUpdated = "Compass State Last Updated (ms)",
     CompassCalibrationState = "Compass Calibration State",
     CompassCalibrationLastUpdated = "Compass Calibration Last Updated (ms)",
-    DeviceToAircraftDistance = "Device > Aircraft Distance - XY (ft)",
+    DeviceToAircraftDistance = "Device > Aircraft Distance - XY (ft)"
 }
-export declare type FlightLogRow = {
+export type FlightLogRow = {
     [prop in FlightLogHeader]: any;
 };
-export declare type FlightLogMetaData = {
+export type FlightLogMetaData = {
     appVersion: string;
     session: {
         id: string;
@@ -182,12 +182,12 @@ export declare type FlightLogMetaData = {
         organizationId: string;
     };
 };
-export declare type FlightLog = {
+export type FlightLog = {
     metaData: FlightLogMetaData;
     rows: FlightLogRow[];
     infos: any[];
 };
-export declare type FlightLogEvent = {
+export type FlightLogEvent = {
     meta: FlightLogMetaData;
     rowIndex?: number;
     row?: FlightLogRow;

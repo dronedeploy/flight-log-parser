@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.fromUtcDateStr = exports.parseLog = exports.parseLogStream = exports.QuasiSubject = void 0;
 const csv_parse_1 = require("csv-parse");
 const types_1 = require("./types");
 const field_types_1 = require("./field-types");
@@ -143,7 +144,7 @@ function parseLogStream(logStream) {
                     meta,
                     rowIndex: progress.index++,
                     row,
-                    info: parseJsonInfo(row.Info),
+                    info: parseJsonInfo(row.Info), // Parsed Info column, if the column was populated with a JSON array.
                 });
             });
         }
@@ -229,7 +230,7 @@ function parseBody(lines, sync) {
         }
         else {
             // @ts-ignore
-            csv_parse_1.default(text, options, onResults);
+            (0, csv_parse_1.default)(text, options, onResults);
         }
     });
 }

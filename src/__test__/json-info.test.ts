@@ -1,11 +1,10 @@
 import 'jest'
-import path from 'path';
-import fs from 'fs';
-import {promisify} from 'util';
 import { fromUtcDateStr, parseLogStream, QuasiSubject } from '../parser';
 import { FlightLogMetaData, FlightLogRow } from '../types';
 
-const readFileAsync = promisify(fs.readFile);
+const path = require('path');
+const readFileAsync = require('fs').promises.readFile;
+
 const jsonInfoLogFilePath = path.join(__dirname, '../../testlog/json-info.log');
 const jsonInfoLogFilePath2 = path.join(__dirname, '../../testlog/json-info-2-plans.log');
 
@@ -13,8 +12,19 @@ describe('Test parseLog on log file with JSON Info column', () => {
   let log: string;
   let log2: string;
   beforeAll(async () => {
-    log = await readFileAsync(jsonInfoLogFilePath, { encoding: 'utf-8' });
-    log2 = await readFileAsync(jsonInfoLogFilePath2, { encoding: 'utf-8' });
+    let tempLog: string | Buffer;
+    tempLog = await readFileAsync(jsonInfoLogFilePath, { encoding: 'utf-8' });
+    if (Buffer.isBuffer(tempLog)) {
+      log = tempLog.toString()
+    } else {
+      log = tempLog
+    }
+    tempLog = await readFileAsync(jsonInfoLogFilePath2, { encoding: 'utf-8' });
+    if (Buffer.isBuffer(tempLog)) {
+      log2 = tempLog.toString()
+    } else {
+      log2 = tempLog
+    }
   });
 
   it('log files exists', async () => {

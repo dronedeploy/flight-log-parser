@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -14,28 +15,28 @@ const testutil_1 = require("./testutil");
 const _ = require('lodash');
 describe('parser', () => {
     let iosLogs;
-    beforeAll(() => __awaiter(this, void 0, void 0, function* () {
-        iosLogs = yield testutil_1.getIosLogs();
+    beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
+        iosLogs = yield (0, testutil_1.getIosLogs)();
     }));
     describe('fromUtcDateStr', () => {
         it('should parse tz-aware timestamps correctly', () => {
             const noonPacific = '05/23/2018 20:00:00.000Z';
-            expect(parser_1.fromUtcDateStr(noonPacific).toISOString()).toBe('2018-05-23T20:00:00.000Z');
+            expect((0, parser_1.fromUtcDateStr)(noonPacific).toISOString()).toBe('2018-05-23T20:00:00.000Z');
             const noonUtc = '05/23/2018 12:00:00.000Z';
-            expect(parser_1.fromUtcDateStr(noonUtc).toISOString()).toBe('2018-05-23T12:00:00.000Z');
+            expect((0, parser_1.fromUtcDateStr)(noonUtc).toISOString()).toBe('2018-05-23T12:00:00.000Z');
         });
         it('should parse tz-naive timestamps as UTC', () => {
             const noon = '05/23/2018 12:00:00';
-            expect(parser_1.fromUtcDateStr(noon).toISOString()).toBe('2018-05-23T12:00:00.000Z');
+            expect((0, parser_1.fromUtcDateStr)(noon).toISOString()).toBe('2018-05-23T12:00:00.000Z');
             const onePm = '2018-05-23 13:00:00';
-            expect(parser_1.fromUtcDateStr(onePm).toISOString()).toBe('2018-05-23T13:00:00.000Z');
+            expect((0, parser_1.fromUtcDateStr)(onePm).toISOString()).toBe('2018-05-23T13:00:00.000Z');
         });
     });
     describe('parseLogStream', () => {
         it('should parse the ios stream correctly', () => {
             const subj = new parser_1.QuasiSubject();
             const events = [];
-            const parseLogStreamObs = parser_1.parseLogStream(subj);
+            const parseLogStreamObs = (0, parser_1.parseLogStream)(subj);
             parseLogStreamObs.subscribe((logEvent) => {
                 events.push(_.cloneDeep(logEvent));
             });
@@ -245,9 +246,9 @@ describe('parser', () => {
         describe('error log', () => {
             let sampleErrLog;
             let events;
-            beforeAll(() => __awaiter(this, void 0, void 0, function* () {
+            beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
                 const subj = new parser_1.QuasiSubject();
-                const parseLogStreamObs = parser_1.parseLogStream(subj);
+                const parseLogStreamObs = (0, parser_1.parseLogStream)(subj);
                 events = [];
                 parseLogStreamObs.subscribe((logEvent) => {
                     events.push(_.cloneDeep(logEvent));

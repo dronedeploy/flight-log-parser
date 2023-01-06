@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -14,16 +15,16 @@ const types_1 = require("../types");
 const testutil_1 = require("./testutil");
 describe('test parse ios logs', () => {
     let iosLogs;
-    beforeAll(() => __awaiter(this, void 0, void 0, function* () {
-        iosLogs = yield testutil_1.getIosLogs();
+    beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
+        iosLogs = yield (0, testutil_1.getIosLogs)();
     }));
-    it('fsRead log should exist', () => __awaiter(this, void 0, void 0, function* () {
+    it('fsRead log should exist', () => __awaiter(void 0, void 0, void 0, function* () {
         expect(iosLogs).toBeTruthy();
     }));
     describe('test sampleErrLog log', () => {
         let sampleErrLog;
-        beforeAll(() => __awaiter(this, void 0, void 0, function* () {
-            sampleErrLog = yield parser_1.parseLog(iosLogs.errorLog);
+        beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
+            sampleErrLog = yield (0, parser_1.parseLog)(iosLogs.errorLog);
         }));
         describe('sampleErrLog detail test', () => {
             it('parsed log should have correct falsy value when session info has no value', () => {
@@ -84,8 +85,8 @@ describe('test parse ios logs', () => {
     });
     describe('test iphone log', () => {
         let iphoneLog;
-        beforeAll(() => __awaiter(this, void 0, void 0, function* () {
-            iphoneLog = yield parser_1.parseLog(iosLogs.iphone);
+        beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
+            iphoneLog = yield (0, parser_1.parseLog)(iosLogs.iphone);
         }));
         it('parsed log should have correct os', () => {
             const iphoneLogMetaData = iphoneLog.metaData;
@@ -107,8 +108,8 @@ describe('test parse ios logs', () => {
                 const iphoneLogMetaData = iphoneLog.metaData;
                 const { session } = iphoneLogMetaData;
                 const { id, start, end, elapsed } = session;
-                const startDate = parser_1.fromUtcDateStr('06/04/2018 22:29:00');
-                const endDate = parser_1.fromUtcDateStr('06/04/2018 22:31:40');
+                const startDate = (0, parser_1.fromUtcDateStr)('06/04/2018 22:29:00');
+                const endDate = (0, parser_1.fromUtcDateStr)('06/04/2018 22:31:40');
                 expect(id).toEqual('12345678');
                 expect(start).toEqual(startDate);
                 expect(end).toEqual(endDate);
@@ -163,8 +164,8 @@ describe('test parse ios logs', () => {
     });
     describe('test ipad log', () => {
         let ipadLog;
-        beforeAll(() => __awaiter(this, void 0, void 0, function* () {
-            ipadLog = yield parser_1.parseLog(iosLogs.ipad);
+        beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
+            ipadLog = yield (0, parser_1.parseLog)(iosLogs.ipad);
         }));
         it('parsed log should have correct os', () => {
             const ipadLogMetaData = ipadLog.metaData;
@@ -186,8 +187,8 @@ describe('test parse ios logs', () => {
                 const ipadLogMetaData = ipadLog.metaData;
                 const { session } = ipadLogMetaData;
                 const { id, start, end, elapsed } = session;
-                const startDate = parser_1.fromUtcDateStr('05/23/2018 20:50:18');
-                const endDate = parser_1.fromUtcDateStr('05/23/2018 20:54:12');
+                const startDate = (0, parser_1.fromUtcDateStr)('05/23/2018 20:50:18');
+                const endDate = (0, parser_1.fromUtcDateStr)('05/23/2018 20:54:12');
                 expect(id).toEqual('12345678');
                 expect(start).toEqual(startDate);
                 expect(end).toEqual(endDate);

@@ -1,29 +1,42 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 require("jest");
 const path_1 = require("path");
-const fs_1 = require("fs");
-const util_1 = require("util");
+const promises_1 = require("fs/promises");
 const parser_1 = require("../parser");
-const readFileAsync = util_1.promisify(fs_1.default.readFile);
+const readFileAsync = promises_1.default.readFile;
 const jsonInfoLogFilePath = path_1.default.join(__dirname, '../../testlog/json-info.log');
 const jsonInfoLogFilePath2 = path_1.default.join(__dirname, '../../testlog/json-info-2-plans.log');
 describe('Test parseLog on log file with JSON Info column', () => {
     let log;
     let log2;
-    beforeAll(() => __awaiter(this, void 0, void 0, function* () {
-        log = yield readFileAsync(jsonInfoLogFilePath, { encoding: 'utf-8' });
-        log2 = yield readFileAsync(jsonInfoLogFilePath2, { encoding: 'utf-8' });
+    beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
+        let tempLog;
+        tempLog = yield readFileAsync(jsonInfoLogFilePath, { encoding: 'utf-8' });
+        if (Buffer.isBuffer(tempLog)) {
+            log = tempLog.toString();
+        }
+        else {
+            log = tempLog;
+        }
+        tempLog = yield readFileAsync(jsonInfoLogFilePath2, { encoding: 'utf-8' });
+        if (Buffer.isBuffer(tempLog)) {
+            log = tempLog.toString();
+        }
+        else {
+            log = tempLog;
+        }
     }));
-    it('log files exists', () => __awaiter(this, void 0, void 0, function* () {
+    it('log files exists', () => __awaiter(void 0, void 0, void 0, function* () {
         expect(log).toBeTruthy();
         expect(log2).toBeTruthy();
     }));
@@ -31,10 +44,10 @@ describe('Test parseLog on log file with JSON Info column', () => {
         let metadata;
         const rows = [];
         const info = [];
-        beforeAll(() => __awaiter(this, void 0, void 0, function* () {
+        beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
             const lines = log.split('\n');
             const subject = new parser_1.QuasiSubject();
-            const parse = parser_1.parseLogStream(subject);
+            const parse = (0, parser_1.parseLogStream)(subject);
             parse.subscribe((event) => {
                 metadata = (event.meta) ? event.meta : metadata;
                 if (event.row)
@@ -45,7 +58,7 @@ describe('Test parseLog on log file with JSON Info column', () => {
             lines.forEach(l => subject.next(l));
             subject.complete();
         }));
-        it('should have correct metadata', () => __awaiter(this, void 0, void 0, function* () {
+        it('should have correct metadata', () => __awaiter(void 0, void 0, void 0, function* () {
             const expected = {
                 "aircraft": {
                     "firmware": "Fake Aircraft Firmware Package",
@@ -82,9 +95,9 @@ describe('Test parseLog on log file with JSON Info column', () => {
                 },
                 "session": {
                     "elapsed": 221.819,
-                    "end": parser_1.fromUtcDateStr("2020-11-13T01:16:22.000Z"),
+                    "end": (0, parser_1.fromUtcDateStr)("2020-11-13T01:16:22.000Z"),
                     "id": "unknown_plan_id",
-                    "start": parser_1.fromUtcDateStr("2020-11-13T01:12:40.000Z")
+                    "start": (0, parser_1.fromUtcDateStr)("2020-11-13T01:12:40.000Z")
                 },
                 "user": {
                     "organizationId": "5ce4361f919c5f0001530f71",
@@ -93,10 +106,10 @@ describe('Test parseLog on log file with JSON Info column', () => {
             };
             expect(metadata).toEqual(expected);
         }));
-        it('should have correct flight log rows', () => __awaiter(this, void 0, void 0, function* () {
+        it('should have correct flight log rows', () => __awaiter(void 0, void 0, void 0, function* () {
             expect(rows.length).toEqual(1170);
         }));
-        it('should have correct JSON Info', () => __awaiter(this, void 0, void 0, function* () {
+        it('should have correct JSON Info', () => __awaiter(void 0, void 0, void 0, function* () {
             expect(info.length).toEqual(1);
             expect(info[0].length).toEqual(2);
             expect(info[0][0]).toEqual({ message: "Mission did take off" });
@@ -111,10 +124,10 @@ describe('Test parseLog on log file with JSON Info column', () => {
         let metadata;
         const rows = [];
         const info = [];
-        beforeAll(() => __awaiter(this, void 0, void 0, function* () {
+        beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
             const lines = log2.split('\n');
             const subject = new parser_1.QuasiSubject();
-            const parse = parser_1.parseLogStream(subject);
+            const parse = (0, parser_1.parseLogStream)(subject);
             parse.subscribe((event) => {
                 metadata = (event.meta) ? event.meta : metadata;
                 if (event.row)

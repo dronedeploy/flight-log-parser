@@ -1,41 +1,42 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 require("jest");
 const path_1 = require("path");
-const fs_1 = require("fs");
-const util_1 = require("util");
+const promises_1 = require("fs/promises");
 const parser_1 = require("../parser");
 const types_1 = require("../types");
-const readFileAsync = util_1.promisify(fs_1.default.readFile);
+const readFileAsync = promises_1.default.readFile;
 // Maybe we can read all files from one folder?
 const androidFilePath = path_1.default.join(__dirname, '/../../testlog/pixel2-inspire2.log');
 describe('test parse android logs', () => {
     let androidLogs;
-    beforeAll(() => __awaiter(this, void 0, void 0, function* () {
+    beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
         androidLogs = {
             pixel2: yield readFileAsync(androidFilePath, { encoding: 'utf8' }),
+            // other: await readFileAsync(otherPath, {encoding: 'utf8'}),
         };
     }));
-    it('fsRead log should exist', () => __awaiter(this, void 0, void 0, function* () {
+    it('fsRead log should exist', () => __awaiter(void 0, void 0, void 0, function* () {
         expect(androidLogs).toBeTruthy();
     }));
     describe('test pixel2 log', () => {
         let pixel2Log;
-        beforeAll(() => __awaiter(this, void 0, void 0, function* () {
-            pixel2Log = yield parser_1.parseLog(androidLogs.pixel2);
+        beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
+            pixel2Log = yield (0, parser_1.parseLog)(androidLogs.pixel2);
         }));
-        it('parsed log should exist', () => __awaiter(this, void 0, void 0, function* () {
+        it('parsed log should exist', () => __awaiter(void 0, void 0, void 0, function* () {
             expect(pixel2Log).toBeTruthy();
         }));
-        it('parsed log should have correct os', () => __awaiter(this, void 0, void 0, function* () {
+        it('parsed log should have correct os', () => __awaiter(void 0, void 0, void 0, function* () {
             const pixel2LogMetaData = pixel2Log.metaData;
             const os = pixel2LogMetaData.device.os;
             const re = /(android \d+(\.\d)*)/i;
@@ -55,8 +56,8 @@ describe('test parse android logs', () => {
                 const pixel2LogMetaData = pixel2Log.metaData;
                 const { session } = pixel2LogMetaData;
                 const { id, start, end, elapsed } = session;
-                const startDate = parser_1.fromUtcDateStr('06/04/2018 20:32:30');
-                const endDate = parser_1.fromUtcDateStr('06/04/2018 20:34:55');
+                const startDate = (0, parser_1.fromUtcDateStr)('06/04/2018 20:32:30');
+                const endDate = (0, parser_1.fromUtcDateStr)('06/04/2018 20:34:55');
                 expect(id).toEqual('12345678');
                 expect(start).toEqual(startDate);
                 expect(end).toEqual(endDate);

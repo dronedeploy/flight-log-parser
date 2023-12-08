@@ -199,13 +199,13 @@ export type FlightLogEvent = {
 };
 
 // based off of types in ios/android SDK FlightMode enums
-export const FLIGHT_MODE_MAPPING = {
+export const FLIGHT_MODE_MAPPING_V4 = {
   0: 'Manual',
   1: 'Attitude',
   2: 'Attitude Course Lock',
   3: 'Attitude Hover',
   4: 'Hover',
-  5: 'GPS Blake',
+  5: 'GPS Brake',
   6: 'GPS Attitude',
   7: 'GPS Course Lock',
   8: 'GPS Home',
@@ -239,4 +239,37 @@ export const FLIGHT_MODE_MAPPING = {
   41: 'Motors Just Started',
   43: 'GPS Gentle',
   255: 'Unknown',
+};
+
+export const FLIGHT_MODE_MAPPING_V5 = {
+  0: 'Manual',
+  1: 'Attitude',
+  2: 'GPS Normal',
+  3: 'POI',
+  4: 'Takeoff Ready',
+  5: 'Auto Takeoff',
+  6: 'Auto Landing',
+  7: 'Waypoint',
+  8: 'Go Home',
+  9: 'Virtual Stick',
+  10: 'Smart Flight',
+  11: 'Pano',
+  12: 'GPS Sport',
+  13: 'GPS Tripod',
+  14: 'Auto Avoidance',
+  15: 'Smart Fly',
+  16: 'Force Landing',
+  17: 'Attitude Landing',
+  18: 'Click Go',
+  19: 'Cinematic',
+  20: 'Draw',
+  21: 'GPS Follow Me',
+  22: 'GPS Novice',
+  23: 'Quick Movie',
+  24: 'Tap Fly',
+  25: 'Master Shot',
+  26: 'APAS',
+  27: 'Timelapse',
+  28: 'Motors Start',
+  29: 'Unknown',
 };

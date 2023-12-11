@@ -1,6 +1,6 @@
 {
   "name": "@dronedeploy/flight-log-parser",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Parser for DroneDeploy flight logs",
   "main": "dist/flight-log-parser.js",
   "module": "dist/flight-log-parser.es6.js",
@@ -13,7 +13,8 @@
   "scripts": {
     "build": "tsc --module commonjs && rollup -c rollup.config.ts",
     "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "rm -rf node_modules/@types/node/ts4.8"
   },
   "jest": {
     "rootDir": "./",
@@ -22,6 +23,7 @@
     },
     "testRegex": "\\.(test|spec)\\.ts$",
     "moduleDirectories": [
+      "bower_components",
       "node_modules",
       "src"
   ],
@@ -30,8 +32,7 @@
       "ts",
       "js",
       "jsx"
-    ],
-    "moduleDirectories": ["node_modules", "bower_components", "src"]
+    ]
   },
   "dependencies": {
     "csv-parse": "^4.4.6",

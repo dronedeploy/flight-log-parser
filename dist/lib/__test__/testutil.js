@@ -10,13 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getIosLogs = void 0;
-const promises_1 = require("fs/promises");
-const path_1 = require("path");
-const readFileAsync = promises_1.default.readFile;
-const ipadFilePath = path_1.default.join(__dirname, '/../../testlog/ipad-ios11-phantom4.log');
-const ipadMinimalFilePath = path_1.default.join(__dirname, '/../../testlog/ipad-ios11-phantom4-minimal.log');
-const iphoneFilePath = path_1.default.join(__dirname, '/../../testlog/iphone-ios11-inspire.log');
-const errorLogFilePath = path_1.default.join(__dirname, '/../../testlog/errorLog.log');
+const path = require('path');
+const readFileAsync = require('fs').promises.readFile;
+// Maybe we can read all files from one folder?
+const ipadFilePath = path.join(__dirname, '/../../testlog/ipad-ios11-phantom4.log');
+const ipadMinimalFilePath = path.join(__dirname, '/../../testlog/ipad-ios11-phantom4-minimal.log');
+const iphoneFilePath = path.join(__dirname, '/../../testlog/iphone-ios11-inspire.log');
+const errorLogFilePath = path.join(__dirname, '/../../testlog/errorLog.log');
 function getIosLogs() {
     return __awaiter(this, void 0, void 0, function* () {
         const iosLogs = {

@@ -1,6 +1,6 @@
 export declare function getIosLogs(): Promise<{
-    ipad: string;
-    ipadmin: string;
-    iphone: string;
-    errorLog: string;
+    ipad: any;
+    ipadmin: any;
+    iphone: any;
+    errorLog: any;
 }>;

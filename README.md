@@ -290,12 +290,12 @@ enum FlightLogHeader {
 2. **Clone** the project to your own machine
 3. **Run the repo**
   ```bash
-    $ yarn install
-    $ yarn build  
+    $ npm install
+    $ npm run build  
   ```
 4. **Run tests**
   ```bash
-     $ yarn test
+     $ npm run test
   ```
 5. **Commit and Push** changes to your own branch
 5. Submit a **Pull request** so that we can review your changes

@@ -10,12 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 require("jest");
-const path_1 = require("path");
-const promises_1 = require("fs/promises");
 const parser_1 = require("../parser");
-const readFileAsync = promises_1.default.readFile;
-const jsonInfoLogFilePath = path_1.default.join(__dirname, '../../testlog/json-info.log');
-const jsonInfoLogFilePath2 = path_1.default.join(__dirname, '../../testlog/json-info-2-plans.log');
+const path = require('path');
+const readFileAsync = require('fs').promises.readFile;
+const jsonInfoLogFilePath = path.join(__dirname, '../../testlog/json-info.log');
+const jsonInfoLogFilePath2 = path.join(__dirname, '../../testlog/json-info-2-plans.log');
 describe('Test parseLog on log file with JSON Info column', () => {
     let log;
     let log2;
@@ -30,10 +29,10 @@ describe('Test parseLog on log file with JSON Info column', () => {
         }
         tempLog = yield readFileAsync(jsonInfoLogFilePath2, { encoding: 'utf-8' });
         if (Buffer.isBuffer(tempLog)) {
-            log = tempLog.toString();
+            log2 = tempLog.toString();
         }
         else {
-            log = tempLog;
+            log2 = tempLog;
         }
     }));
     it('log files exists', () => __awaiter(void 0, void 0, void 0, function* () {

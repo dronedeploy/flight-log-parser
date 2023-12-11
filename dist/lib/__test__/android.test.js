@@ -10,13 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 require("jest");
-const path_1 = require("path");
-const promises_1 = require("fs/promises");
 const parser_1 = require("../parser");
 const types_1 = require("../types");
-const readFileAsync = promises_1.default.readFile;
-// Maybe we can read all files from one folder?
-const androidFilePath = path_1.default.join(__dirname, '/../../testlog/pixel2-inspire2.log');
+const path = require('path');
+const readFileAsync = require('fs').promises.readFile;
+const androidFilePath = path.join(__dirname, '/../../testlog/pixel2-inspire2.log');
 describe('test parse android logs', () => {
     let androidLogs;
     beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {

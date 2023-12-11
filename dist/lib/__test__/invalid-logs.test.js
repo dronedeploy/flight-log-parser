@@ -10,15 +10,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 require("jest");
-const path_1 = require("path");
-const fs_1 = require("fs");
 const parser_1 = require("../parser");
-const truncatedLog = path_1.default.join(__dirname, '/../../testlog/truncated.log');
+const path = require('path');
+const fs = require('fs');
+const truncatedLog = path.join(__dirname, '/../../testlog/truncated.log');
 describe('test parsing troublesome logs', () => {
     describe('truncated log file', () => {
         let parsedLog;
         beforeEach(() => __awaiter(void 0, void 0, void 0, function* () {
-            const log = fs_1.default.readFileSync(truncatedLog, { encoding: 'utf8' });
+            const log = fs.readFileSync(truncatedLog, { encoding: 'utf8' });
             parsedLog = yield (0, parser_1.parseLog)(log);
         }));
         it('should approximate a valid elapsed time based on the last log row', () => {

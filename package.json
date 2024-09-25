@@ -11,7 +11,7 @@
   "repository": "https://www.github.com/dronedeploy/flight-log-parser",
   "license": "MIT",
   "scripts": {
-    "build": "tsc --module commonjs && rollup -c rollup.config.ts",
+    "build": "tsc --module commonjs && rollup -c rollup.config.mjs",
     "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
     "test": "jest",
     "postinstall": "rm -rf node_modules/@types/node/ts4.8"
@@ -26,8 +26,10 @@
       "bower_components",
       "node_modules",
       "src"
-  ],
-    "modulePaths": ["<rootDir>"],
+    ],
+    "modulePaths": [
+      "<rootDir>"
+    ],
     "moduleFileExtensions": [
       "ts",
       "js",
@@ -45,7 +47,7 @@
     "jest": "^29.3.1",
     "lodash.camelcase": "^4.3.0",
     "prettier": "^1.13.7",
-    "rollup": "^0.58.0",
+    "rollup": "^4.22.4",
     "rollup-plugin-commonjs": "^9.0.0",
     "rollup-plugin-json": "^3.0.0",
     "rollup-plugin-node-resolve": "^3.0.0",

@@ -4,6 +4,7 @@
     "module":"commonjs",
     "strict": true,
     "sourceMap": true,
+    "skipLibCheck": true,
     "declaration": true,
     "allowSyntheticDefaultImports": true,
     "declarationDir": "dist/types",

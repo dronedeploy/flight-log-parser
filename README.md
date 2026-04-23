@@ -135,7 +135,7 @@ enum FlightLogHeader {
 ```js
  {
     metaData : {
-        appVersion: '2.75.0',
+        appVersion: '5.50.0',
         session:
          { id: '12345678',
            start: 2018-06-05T05:29:00.000Z,

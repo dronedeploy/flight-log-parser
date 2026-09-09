@@ -37,7 +37,7 @@
     ]
   },
   "dependencies": {
-    "csv-parse": "^4.4.6",
+    "csv-parse": "^7.0.2",
     "lodash": "^4.17.15"
   },
   "devDependencies": {

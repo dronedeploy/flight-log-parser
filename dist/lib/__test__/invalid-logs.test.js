@@ -30,5 +30,15 @@ describe('test parsing troublesome logs', () => {
             expect(metaData.session.end.toISOString()).toBe('2018-06-04T20:32:38.000Z');
         });
     });
+    describe('metadata line with a long run of whitespace', () => {
+        it('should parse in linear time', () => __awaiter(void 0, void 0, void 0, function* () {
+            const log = fs.readFileSync(truncatedLog, { encoding: 'utf8' });
+            // The embedded U+2028 makes the match fail, which is the case that used to backtrack quadratically.
+            const hostile = `Aircraft Name${' '.repeat(100000)}a\u2028b\n${log}`;
+            const start = Date.now();
+            yield (0, parser_1.parseLog)(hostile);
+            expect(Date.now() - start).toBeLessThan(2000);
+        }));
+    });
 });
 //# sourceMappingURL=invalid-logs.test.js.map

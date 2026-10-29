@@ -4,6 +4,7 @@ import sourceMaps from 'rollup-plugin-sourcemaps'
 import camelCase from 'lodash.camelcase'
 import typescript from 'rollup-plugin-typescript2'
 import json from 'rollup-plugin-json'
+import terser from '@rollup/plugin-terser';
 import pkg from './package.json' assert { type: 'json' };
 
 const libraryName = 'flight-log-parser'
@@ -30,8 +31,8 @@ export default {
     // which external modules to include in the bundle
     // https://github.com/rollup/rollup-plugin-node-resolve#usage
     resolve(),
-
     // Resolve source maps to the original source
     sourceMaps(),
+    terser(),
   ],
 }

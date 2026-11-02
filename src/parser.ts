@@ -1,9 +1,8 @@
-import parse from 'csv-parse';
+import { parse } from 'csv-parse';
+import { parse as syncParse } from 'csv-parse/sync';
 
 import { FlightLogRow, FlightLogHeader, FlightLogMetaData, FlightLog, FlightLogEvent } from './types';
 import { INT_FIELDS, BOOL_FIELDS, FLOAT_FIELDS, DATE_FIELDS } from './field-types';
-
-const syncParse = require('csv-parse/lib/sync');
 
 
 const META_REGEX = {
@@ -217,7 +216,7 @@ function parseBody(lines: string[], sync?: boolean): Promise<FlightLogRow[]> {
   };
 
   return new Promise((resolve, reject) => {
-    const onResults = (err: any, result: string[]) => {
+    const onResults = (err: any, result: string[][]) => {
       if (err) {
         return reject(err);
       }

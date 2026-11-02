@@ -1,4 +1,5 @@
-import 'stream';
+import 'csv-parse';
+import { parse } from 'csv-parse/sync';
 
 var FlightLogHeader;
 (function (FlightLogHeader) {
@@ -212,8 +213,6 @@ const FLIGHT_MODE_MAPPING_V5 = {
     29: 'Unknown',
 };
 
-Buffer.from([239, 187, 191]);
-
 const INT_FIELDS = new Set([
     FlightLogHeader.AircraftBatteryCell1Voltage,
     FlightLogHeader.AircraftBatteryCell2Voltage,
@@ -321,7 +320,6 @@ const DATE_FIELDS = new Set([
     FlightLogHeader.DateTime,
 ]);
 
-const syncParse = require('csv-parse/lib/sync');
 const META_REGEX = {
     appVersion: /^#DroneDeploy\s+(.+)$/,
     sessionId: /^Session ID\s+(.+)$/,
@@ -536,7 +534,7 @@ function parseBody(lines, sync) {
             resolve(logs);
         };
         {
-            const results = syncParse(text, options);
+            const results = parse(text, options);
             onResults(undefined, results);
         }
     });

@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fromUtcDateStr = exports.parseLog = exports.parseLogStream = exports.QuasiSubject = void 0;
 const csv_parse_1 = require("csv-parse");
+const sync_1 = require("csv-parse/sync");
 const types_1 = require("./types");
 const field_types_1 = require("./field-types");
-const syncParse = require('csv-parse/lib/sync');
 const META_REGEX = {
     appVersion: /^#DroneDeploy\s+(.+)$/,
     sessionId: /^Session ID\s+(.+)$/,
@@ -225,12 +225,12 @@ function parseBody(lines, sync) {
             resolve(logs);
         };
         if (sync) {
-            const results = syncParse(text, options);
+            const results = (0, sync_1.parse)(text, options);
             onResults(undefined, results);
         }
         else {
             // @ts-ignore
-            (0, csv_parse_1.default)(text, options, onResults);
+            (0, csv_parse_1.parse)(text, options, onResults);
         }
     });
 }

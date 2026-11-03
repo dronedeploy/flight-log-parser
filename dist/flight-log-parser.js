@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('stream')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'stream'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.flightLogParser = {}));
-})(this, (function (exports) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('csv-parse'), require('csv-parse/sync')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'csv-parse', 'csv-parse/sync'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.flightLogParser = {}, null, global.sync));
+})(this, (function (exports, csvParse, sync) { 'use strict';
 
   exports.FlightLogHeader = void 0;
   (function (FlightLogHeader) {
@@ -216,8 +216,6 @@
       29: 'Unknown',
   };
 
-  Buffer.from([239, 187, 191]);
-
   const INT_FIELDS = new Set([
       exports.FlightLogHeader.AircraftBatteryCell1Voltage,
       exports.FlightLogHeader.AircraftBatteryCell2Voltage,
@@ -325,7 +323,6 @@
       exports.FlightLogHeader.DateTime,
   ]);
 
-  const syncParse = require('csv-parse/lib/sync');
   const META_REGEX = {
       appVersion: /^#DroneDeploy\s+(.+)$/,
       sessionId: /^Session ID\s+(.+)$/,
@@ -504,7 +501,7 @@
           parse.toPromise().then(() => resolve(flightLog)).catch((reason => reject(reason)));
       });
   }
-  function parseBody(lines, sync) {
+  function parseBody(lines, sync$1) {
       const text = lines.join('\n');
       const options = {
           delimiter: '\t',
@@ -540,7 +537,7 @@
               resolve(logs);
           };
           {
-              const results = syncParse(text, options);
+              const results = sync.parse(text, options);
               onResults(undefined, results);
           }
       });
